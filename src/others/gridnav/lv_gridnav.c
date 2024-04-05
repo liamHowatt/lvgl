@@ -142,6 +142,7 @@ static void gridnav_event_cb(lv_event_t * e)
 
         uint32_t key = lv_event_get_key(e);
         lv_obj_t * guess = NULL;
+        bool scrolled = false;
 
         if(key == LV_KEY_RIGHT) {
             if((dsc->ctrl & LV_GRIDNAV_CTRL_SCROLL_FIRST) && lv_obj_has_flag(dsc->focused_obj, LV_OBJ_FLAG_SCROLLABLE) &&
@@ -149,6 +150,7 @@ static void gridnav_event_cb(lv_event_t * e)
                 int32_t d = lv_obj_get_width(dsc->focused_obj) / 4;
                 if(d <= 0) d = 1;
                 lv_obj_scroll_by_bounded(dsc->focused_obj, -d, 0, LV_ANIM_ON);
+                scrolled = true;
             }
             else {
                 guess = find_chid(obj, dsc->focused_obj, FIND_RIGHT);
@@ -169,6 +171,7 @@ static void gridnav_event_cb(lv_event_t * e)
                 int32_t d = lv_obj_get_width(dsc->focused_obj) / 4;
                 if(d <= 0) d = 1;
                 lv_obj_scroll_by_bounded(dsc->focused_obj, d, 0, LV_ANIM_ON);
+                scrolled = true;
             }
             else {
                 guess = find_chid(obj, dsc->focused_obj, FIND_LEFT);
@@ -189,6 +192,7 @@ static void gridnav_event_cb(lv_event_t * e)
                 int32_t d = lv_obj_get_height(dsc->focused_obj) / 4;
                 if(d <= 0) d = 1;
                 lv_obj_scroll_by_bounded(dsc->focused_obj, 0, -d, LV_ANIM_ON);
+                scrolled = true;
             }
             else {
                 guess = find_chid(obj, dsc->focused_obj, FIND_BOTTOM);
@@ -208,6 +212,7 @@ static void gridnav_event_cb(lv_event_t * e)
                 int32_t d = lv_obj_get_height(dsc->focused_obj) / 4;
                 if(d <= 0) d = 1;
                 lv_obj_scroll_by_bounded(dsc->focused_obj, 0, d, LV_ANIM_ON);
+                scrolled = true;
             }
             else {
                 guess = find_chid(obj, dsc->focused_obj, FIND_TOP);
@@ -221,17 +226,15 @@ static void gridnav_event_cb(lv_event_t * e)
                 }
             }
         }
-        else {
-            if(lv_group_get_focused(lv_obj_get_group(obj)) == obj) {
-                lv_obj_send_event(dsc->focused_obj, LV_EVENT_KEY, &key);
-            }
-        }
 
         if(guess && guess != dsc->focused_obj) {
             lv_obj_remove_state(dsc->focused_obj, LV_STATE_FOCUSED | LV_STATE_FOCUS_KEY);
             lv_obj_add_state(guess, LV_STATE_FOCUSED | LV_STATE_FOCUS_KEY);
             lv_obj_scroll_to_view(guess, LV_ANIM_ON);
             dsc->focused_obj = guess;
+        }
+        else if(!scrolled && lv_group_get_focused(lv_obj_get_group(obj)) == obj) {
+            lv_obj_send_event(dsc->focused_obj, LV_EVENT_KEY, &key);
         }
     }
     else if(code == LV_EVENT_FOCUSED) {
