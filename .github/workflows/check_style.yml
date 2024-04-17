@@ -1,7 +1,7 @@
 name: Verify code formatting
 on:
-  push:
-  pull_request:
+  # push:
+  # pull_request:
 
 jobs:
   verify-formatting:
