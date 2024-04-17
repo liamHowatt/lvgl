@@ -29,7 +29,7 @@ jobs:
 
   # build-windows-GCC:
   #   runs-on: windows-2022
-  #   name: Build Windows (GCC)
+  #   name: Build Windows GCC
   #   steps:
   #   - uses: actions/checkout@v4
   #   - uses: ammaraskar/gcc-problem-matcher@master
@@ -40,10 +40,11 @@ jobs:
 
   build-windows-MSVC:
     runs-on: windows-2022
-    name: Build Windows (MSVC)
+    name: Build Windows MSVC
     steps:
     - uses: actions/checkout@v4
     - uses: ilammy/msvc-dev-cmd@v1
+    - uses: actions/setup-ruby@v1 # required by CMake
     - name: Install prerequisites
       run: scripts\install-prerequisites.bat
     - name: Build
