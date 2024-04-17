@@ -44,7 +44,9 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: ilammy/msvc-dev-cmd@v1
-    - uses: actions/setup-ruby@v1 # required by CMake
+      with:
+        arch: x64
+    - uses: ruby/setup-ruby@v1 # required by CMake
     - name: Install prerequisites
       run: scripts\install-prerequisites.bat
     - name: Build
