@@ -37,6 +37,8 @@ jobs:
   #     run: scripts\install-prerequisites.bat
   #   - name: Build
   #     run: python tests/main.py build
+  #     env:
+  #       CC: gcc
 
   build-windows-MSVC:
     runs-on: windows-2022
@@ -46,11 +48,11 @@ jobs:
     - uses: ruby/setup-ruby@v1 # required by CMake
       with:
         ruby-version: '3.3.0'
-    - name: Install prerequisites
-      run: scripts\install-prerequisites.bat
     - uses: ilammy/msvc-dev-cmd@v1
       with:
         arch: x64
+    - name: Install prerequisites
+      run: scripts\install-prerequisites.bat
     - name: Build
       run: python tests/main.py build
       env:
