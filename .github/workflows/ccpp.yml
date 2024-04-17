@@ -53,8 +53,8 @@ jobs:
       run: scripts\install-prerequisites.bat
     - name: Build
       run: python tests/main.py build
-      env:
-        VCPKG_DEST_WIN: ${{ env.VCPKG_DEST_WIN }}
+      # env:
+      #   VCPKG_DEST_WIN: ${{ env.VCPKG_DEST_WIN }}
 
 #   test-native:
 #     runs-on: ubuntu-latest
