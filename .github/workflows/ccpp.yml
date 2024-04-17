@@ -53,7 +53,7 @@ jobs:
         ruby-version: '3.3.0'
     - name: Install prerequisites
       run: scripts\install-prerequisites.bat
-    - run: cmake --version
+    - run: which cmake
     - name: Build
       run: python tests/main.py build
       env:
