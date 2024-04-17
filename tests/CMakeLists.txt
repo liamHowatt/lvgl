@@ -260,9 +260,9 @@ endif()
 # find_package(PNG REQUIRED)
 # include_directories(${PNG_INCLUDE_DIR})
 
-# libfreetype is required for the font test case
-find_package(Freetype REQUIRED)
-include_directories(${FREETYPE_INCLUDE_DIRS})
+# # libfreetype is required for the font test case
+# find_package(Freetype REQUIRED)
+# include_directories(${FREETYPE_INCLUDE_DIRS})
 
 # libinput is required for the libinput device driver test case
 find_package(Libinput OPTIONAL_COMPONENTS)
