@@ -47,39 +47,35 @@ jobs:
 
     - uses: actions/checkout@v4
 
-    - run: where cmake
-    - run: which cmake
+    # - run: where cmake
+    # - run: which cmake
 
     - name: Install prerequisites
       run: scripts\install-prerequisites.bat
 
-    - run: where cmake
-    - run: which cmake
+    # - run: where cmake
+    # - run: which cmake
 
     - uses: ilammy/msvc-dev-cmd@v1
       with:
         arch: x64
 
-    - run: where cmake
-    - run: which cmake
+    # - run: where cmake
+    # - run: which cmake
 
     - uses: ruby/setup-ruby@v1 # required by CMake+Ninja
       with:
-        ruby-version: '3.3.0'
+        ruby-version: 'mswin'
 
-    - run: where cmake
-    - run: which cmake
+    # - run: where cmake
+    # - run: which cmake
 
-    - run: env
-      env:
-        CC: cl
-
-    - run: env
+    - run: SET
 
     - name: Build
       run: python tests/main.py build
-      # env:
-      #   CC: cl
+      env:
+        CC: cl
       # env:
       #   VCPKG_DEST_WIN: ${{ env.VCPKG_DEST_WIN }}
 
