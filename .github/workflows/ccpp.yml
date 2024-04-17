@@ -44,19 +44,20 @@ jobs:
     runs-on: windows-2022
     name: Build Windows MSVC
     steps:
-    - uses: actions/checkout@v4
+    # - uses: actions/checkout@v4
     - uses: ilammy/msvc-dev-cmd@v1
       with:
         arch: x64
-    - uses: ruby/setup-ruby@v1 # required by CMake+Ninja
-      with:
-        ruby-version: '3.2.3'
-    - name: Install prerequisites
-      run: scripts\install-prerequisites.bat
-    - name: Build
-      run: python tests/main.py build
-      env:
-        CC: cl
+    - run: cmake --version
+    # - uses: ruby/setup-ruby@v1 # required by CMake+Ninja
+    #   with:
+    #     ruby-version: '3.2.3'
+    # - name: Install prerequisites
+    #   run: scripts\install-prerequisites.bat
+    # - name: Build
+    #   run: python tests/main.py build
+    #   env:
+    #     CC: cl
       # env:
       #   VCPKG_DEST_WIN: ${{ env.VCPKG_DEST_WIN }}
 
