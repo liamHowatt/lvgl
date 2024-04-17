@@ -53,6 +53,8 @@ jobs:
         arch: x64
     - name: Build
       run: python tests/main.py build
+      env:
+        CC: cl
       # env:
       #   VCPKG_DEST_WIN: ${{ env.VCPKG_DEST_WIN }}
 
