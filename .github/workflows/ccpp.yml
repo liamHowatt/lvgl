@@ -70,10 +70,16 @@ jobs:
     - run: where cmake
     - run: which cmake
 
-    - name: Build
-      run: python tests/main.py build
+    - run: env
       env:
         CC: cl
+
+    - run: env
+
+    - name: Build
+      run: python tests/main.py build
+      # env:
+      #   CC: cl
       # env:
       #   VCPKG_DEST_WIN: ${{ env.VCPKG_DEST_WIN }}
 
