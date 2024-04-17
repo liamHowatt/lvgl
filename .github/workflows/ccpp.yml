@@ -46,11 +46,11 @@ jobs:
     - uses: ilammy/msvc-dev-cmd@v1
       with:
         arch: x64
-    - uses: ruby/setup-ruby@v1 # required by CMake
-      with:
-        ruby-version: '3.3.0'
-    - name: Install prerequisites
-      run: scripts\install-prerequisites.bat
+    # - uses: ruby/setup-ruby@v1 # required by CMake
+    #   with:
+    #     ruby-version: '3.3.0'
+    # - name: Install prerequisites
+    #   run: scripts\install-prerequisites.bat
     - name: Build
       run: python tests/main.py build
       # env:
