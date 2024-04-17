@@ -76,6 +76,7 @@ jobs:
       run: python tests/main.py build
       env:
         CC: cl
+        MSVC_RUNTIME_LIBRARY: ''
       # env:
       #   VCPKG_DEST_WIN: ${{ env.VCPKG_DEST_WIN }}
 
