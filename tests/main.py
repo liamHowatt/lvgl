@@ -91,7 +91,7 @@ def build_tests(options_name, build_type, clean):
     os.chdir(build_dir)
     if created_build_dir:
         subprocess.check_call(['cmake', '-GNinja', '-DCMAKE_BUILD_TYPE=%s' % build_type,
-                               '-D%s=1' % options_name, "-DCMAKE_TOOLCHAIN_FILE=C:\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake", "-DVCPKG_TARGET_TRIPLET=x64-windows", '..'])
+                               '-D%s=1' % options_name, '..'])
     subprocess.check_call(['cmake', '--build', build_dir,
                            '--parallel', str(os.cpu_count())])
 
