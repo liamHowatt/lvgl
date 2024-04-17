@@ -256,9 +256,9 @@ if(NOT WIN32)
     include_directories(${JPEG_INCLUDE_DIR})
 endif()
 
-# libpng is required for the png test case
-find_package(PNG REQUIRED)
-include_directories(${PNG_INCLUDE_DIR})
+# # libpng is required for the png test case
+# find_package(PNG REQUIRED)
+# include_directories(${PNG_INCLUDE_DIR})
 
 # libfreetype is required for the font test case
 find_package(Freetype REQUIRED)
@@ -347,7 +347,7 @@ foreach( test_case_fname ${TEST_CASE_FILES} )
             lvgl_demos
             lvgl
             lvgl_thorvg
-            ${PNG_LIBRARIES}
+            # ${PNG_LIBRARIES}
             ${FREETYPE_LIBRARIES}
             ${LIBDRM_LIBRARIES}
             ${LIBINPUT_LIBRARIES}
