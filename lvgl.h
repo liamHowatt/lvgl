@@ -3,18 +3,6 @@
  * Include all LVGL related headers
  */
 
-#ifdef _MSC_VER
-#error building with MSVC
-#else
-
-#ifdef __GNUC__
-#error building with GCC
-#else
-#error building with unknown
-#endif
-
-#endif
-
 #ifndef LVGL_H
 #define LVGL_H
 
