@@ -59,8 +59,6 @@ endif()
 
 if(NOT (CMAKE_C_COMPILER_ID STREQUAL "MSVC"))
   set_source_files_properties(${LVGL_ROOT_DIR}/src/others/vg_lite_tvg/vg_lite_tvg.cpp PROPERTIES COMPILE_FLAGS -Wunused-parameter)
-else()
-  set_source_files_properties(${LVGL_ROOT_DIR}/src/others/vg_lite_tvg/vg_lite_tvg.cpp PROPERTIES COMPILE_FLAGS)
 endif()
 
 # Build LVGL example library
