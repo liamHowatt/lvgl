@@ -40,7 +40,7 @@ class STDOut:
         sys.stdout = self._stdout
 
 
-def run(output_path, lvgl_config_path, output_to_stdout, *compiler_args):
+def run(output_path, lvgl_config_path, output_to_stdout, target_header, *compiler_args):
     # stdout = STDOut()
 
     # The thread is to provide an indication that things are being processed.
@@ -64,16 +64,19 @@ def run(output_path, lvgl_config_path, output_to_stdout, *compiler_args):
     temp_directory = tempfile.mkdtemp(suffix='.lvgl_json')
     lvgl_path = project_path
     lvgl_src_path = os.path.join(lvgl_path, 'src')
-    lvgl_header_path = os.path.join(lvgl_path, 'lvgl.h')
     temp_lvgl = os.path.join(temp_directory, 'lvgl')
+    target_header_base_name, target_header_path = {
+        "lvgl.h": ("lvgl", "lvgl.h"),
+        "lvgl_private.h": ("lvgl_private", "src/lvgl_private.h"),
+    }[target_header]
 
     try:
         os.mkdir(temp_lvgl)
         shutil.copytree(lvgl_src_path, os.path.join(temp_lvgl, 'src'))
-        shutil.copyfile(lvgl_header_path, os.path.join(temp_lvgl, 'lvgl.h'))
+        shutil.copyfile(os.path.join(lvgl_path, 'lvgl.h'), os.path.join(temp_lvgl, 'lvgl.h'))
 
-        lvgl_header_path = os.path.join(temp_lvgl, 'lvgl.h')
-        pp_file = os.path.join(temp_directory, 'lvgl.pp')
+        lvgl_header_full_path = os.path.join(temp_lvgl, target_header_path)
+        pp_file = os.path.join(temp_directory, target_header_base_name + '.pp')
 
         if lvgl_config_path is None:
             lvgl_config_path = os.path.join(lvgl_path, 'lv_conf_template.h')
@@ -179,7 +182,7 @@ def run(output_path, lvgl_config_path, output_to_stdout, *compiler_args):
 
         cpp_cmd.extend(['-DPYCPARSER', f'"-I{fake_libc_path}"'])
         cpp_cmd.extend([f'"-I{item}"' for item in include_dirs])
-        cpp_cmd.append(f'"{lvgl_header_path}"')
+        cpp_cmd.append(f'"{lvgl_header_full_path}"')
 
         if sys.platform.startswith('win'):
             cpp_cmd.insert(len(cpp_cmd) - 2, output_pp)
@@ -211,7 +214,7 @@ def run(output_path, lvgl_config_path, output_to_stdout, *compiler_args):
             pp_data = f.read()
 
         cparser = pycparser.CParser()
-        ast = cparser.parse(pp_data, lvgl_header_path)
+        ast = cparser.parse(pp_data, lvgl_header_full_path)
 
         # This code block is to handle how pycparser handles forward
         # declarations and combining the forward declarations with the actual
@@ -274,7 +277,7 @@ def run(output_path, lvgl_config_path, output_to_stdout, *compiler_args):
             if not os.path.exists(output_path):
                 os.makedirs(output_path)
 
-            output_path = os.path.join(output_path, 'lvgl.json')
+            output_path = os.path.join(output_path, target_header_base_name + '.json')
 
             with open(output_path, 'w') as f:
                 f.write(json.dumps(ast.to_dict(), indent=4))
@@ -385,9 +388,17 @@ if __name__ == '__main__':
         help='this option leaves the temporary folder in place.',
         action='store_true',
     )
+    parser.add_argument(
+        "--target-header",
+        dest="target_header",
+        help="which header to parse",
+        action="store",
+        choices=("lvgl.h", "lvgl_private.h"),
+        default="lvgl.h",
+    )
 
     args, extra_args = parser.parse_known_args()
 
     DEVELOP = args.develop
 
-    run(args.output_path, args.lv_conf, args.output_path is None, *extra_args)
+    run(args.output_path, args.lv_conf, args.output_path is None, args.target_header, *extra_args)
