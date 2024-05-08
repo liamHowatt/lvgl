@@ -109,7 +109,8 @@ def run(output_path, lvgl_config_path, output_to_stdout, target_header, *compile
                         'LV_USE_FRAGMENT',
                         'LV_USE_IMGFONT',
                         'LV_USE_SNAPSHOT',
-                        'LV_USE_FREETYPE'
+                        # FIXME
+                        # 'LV_USE_FREETYPE'
                     ):
                         if line.startswith(f'#define {item} '):
                             data[i] = f'#define {item} 1'
@@ -201,7 +202,7 @@ def run(output_path, lvgl_config_path, output_to_stdout, target_header, *compile
         out, err = p.communicate()
         exit_code = p.returncode
 
-        if not os.path.exists(pp_file):
+        if not os.path.exists(pp_file) or out or err or exit_code:
             sys.stdout.write(out.decode('utf-8').strip() + '\n')
             sys.stdout.write('EXIT CODE: ' + str(exit_code) + '\n')
             sys.stderr.write(err.decode('utf-8').strip() + '\n')
