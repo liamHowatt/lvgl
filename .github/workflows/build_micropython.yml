@@ -41,9 +41,13 @@ jobs:
     - name: Override builtin python version
       run: sudo update-alternatives --install /usr/bin/python3 python3 $(which python3.10) 1
     - name: Setup ESP-IDF
+      env:
+        PYTHON_EXECUTABLE: /usr/bin/python3
       run: |
         source tools/ci.sh && ci_esp32_idf44_setup
     - name: Build ESP32 port
+      env:
+        PYTHON_EXECUTABLE: /usr/bin/python3
       run: |
         source tools/ci.sh && ci_esp32_build
     - name: Install requirements for the test
