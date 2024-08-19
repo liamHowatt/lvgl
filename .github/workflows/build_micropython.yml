@@ -15,8 +15,6 @@ jobs:
     - uses: actions/setup-python@v5
       with:
         python-version: '3.10'
-    - name: Override builtin python version
-      run: sudo update-alternatives --install /usr/bin/python3 python3 $(which python3) 1
     - name: Install Dependencies
       run: |
         sudo add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu `lsb_release -sc` main universe restricted multiverse"
@@ -40,6 +38,8 @@ jobs:
         git submodule update --init --recursive
     - name: Build mpy-cross
       run: make -j $(nproc) -C mpy-cross
+    - name: Override builtin python version
+      run: sudo update-alternatives --install /usr/bin/python3 python3 $(which python3) 1
     - name: Setup ESP-IDF
       run: |
         source tools/ci.sh && ci_esp32_idf44_setup
