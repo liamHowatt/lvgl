@@ -44,7 +44,7 @@
  *      DEFINES
  *********************/
 
-#define DRAW_UNIT_ID_NEMA_GFX 5
+#define DRAW_UNIT_ID_NEMA_GFX 7
 
 /**********************
  *      TYPEDEFS
