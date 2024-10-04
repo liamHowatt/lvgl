@@ -70,7 +70,7 @@ void lv_draw_nema_gfx_border(lv_draw_unit_t * draw_unit, const lv_draw_border_ds
     nema_set_clip(clip_area.x1, clip_area.y1, lv_area_get_width(&clip_area), lv_area_get_height(&clip_area));
 
     lv_area_t clipped_coords;
-    if(!_lv_area_intersect(&clipped_coords, &inward_coords, &clip_area))
+    if(!lv_area_intersect(&clipped_coords, &inward_coords, &clip_area))
         return; /*Fully clipped, nothing to do*/
 
     nema_bind_dst_tex((uintptr_t)NEMA_VIRT2PHYS(layer->draw_buf->data), lv_area_get_width(&(layer->buf_area)),

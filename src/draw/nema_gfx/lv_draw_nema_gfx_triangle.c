@@ -60,7 +60,7 @@ void lv_draw_nema_gfx_triangle(lv_draw_unit_t * draw_unit, const lv_draw_triangl
     lv_area_move(&coords, -layer->buf_area.x1, -layer->buf_area.y1);
 
     lv_area_t clipped_coords;
-    if(!_lv_area_intersect(&clipped_coords, &coords, &rel_clip_area))
+    if(!lv_area_intersect(&clipped_coords, &coords, &rel_clip_area))
         return; /* Fully clipped, nothing to do */
 
     nema_set_clip(rel_clip_area.x1, rel_clip_area.y1, lv_area_get_width(&rel_clip_area),
