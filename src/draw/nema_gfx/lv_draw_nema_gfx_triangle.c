@@ -142,6 +142,8 @@ void lv_draw_nema_gfx_triangle(lv_draw_unit_t * draw_unit, const lv_draw_triangl
 
         y0 -= layer->buf_area.y1;
         y1 -= layer->buf_area.y1;
+        x0 -= layer->buf_area.x1;
+        x1 -= layer->buf_area.x1;
 
         uint8_t cmds_polygon[] = {NEMA_VG_PRIM_MOVE, NEMA_VG_PRIM_POLYGON};
         float triangle_coords[] = {dsc->p[0].x - layer->buf_area.x1, dsc->p[0].y - layer->buf_area.y1,

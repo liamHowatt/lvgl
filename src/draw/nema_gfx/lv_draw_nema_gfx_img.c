@@ -178,12 +178,12 @@ static void _draw_nema_gfx_img(lv_draw_unit_t * draw_unit, const lv_draw_image_d
     nema_bind_src_tex((uintptr_t)(src_buf), tex_w, tex_h, color_format, img_dsc->header.stride,
                       dsc->antialias ? NEMA_FILTER_BL : NEMA_FILTER_PS);
 
-//    if(recolor) {
-//        lv_color32_t col32 = lv_color_to_32(dsc->recolor, LV_OPA_MIX2(dsc->recolor_opa, dsc->opa));
-//        uint32_t color = nema_rgba(col32.red, col32.green, col32.blue, col32.alpha);
-//        nema_set_recolor_color(color);
-//        blending_mode |= NEMA_BLOP_RECOLOR;
-//    }
+    /* if(recolor) {
+           lv_color32_t col32 = lv_color_to_32(dsc->recolor, LV_OPA_MIX2(dsc->recolor_opa, dsc->opa));
+           uint32_t color = nema_rgba(col32.red, col32.green, col32.blue, col32.alpha);
+           nema_set_recolor_color(color);
+           blending_mode |= NEMA_BLOP_RECOLOR;
+       } */
 
     if(dsc->opa < 255) {
         uint32_t rgba = ((uint32_t)dsc->opa << 24U) | ((uint32_t)dsc->opa << 16U) | ((uint32_t)dsc->opa << 8U) | ((

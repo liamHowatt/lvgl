@@ -624,7 +624,7 @@
             #ifdef CONFIG_LV_NEMA_GFX_MAX_RESY
                 #define LV_NEMA_GFX_MAX_RESY CONFIG_LV_NEMA_GFX_MAX_RESY
             #else
-                #define LV_NEMA_GFX_MAX_RESY 480
+                #define LV_NEMA_GFX_MAX_RESY 600
             #endif
         #endif
     #endif

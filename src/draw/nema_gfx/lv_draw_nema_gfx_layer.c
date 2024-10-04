@@ -34,11 +34,6 @@
  *********************/
 #include "lv_draw_nema_gfx.h"
 
-#include "lvgl_port_display.h"
-#include "main.h"
-#include "ltdc.h"
-#include "dma2d.h"
-
 #if LV_USE_NEMA_GFX
 
 /**********************
@@ -55,12 +50,6 @@ void lv_draw_nema_gfx_layer(lv_draw_unit_t * draw_unit, const lv_draw_image_dsc_
 
     lv_draw_image_dsc_t new_draw_dsc = *draw_dsc;
     new_draw_dsc.src = layer_to_draw->draw_buf;
-
-//    extern DCACHE_HandleTypeDef hdcache1;
-//    HAL_DCACHE_Invalidate(&hdcache1);
-//    HAL_DCACHE_Invalidate(&hdcache1);
-//    HAL_DCACHE_Clean(&hdcache1);
-//    HAL_DCACHE_(&hdcache2);
 
     lv_draw_nema_gfx_img(draw_unit, &new_draw_dsc, coords);
 }
