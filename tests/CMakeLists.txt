@@ -210,7 +210,7 @@ if(NOT (CMAKE_C_COMPILER_ID STREQUAL "MSVC"))
     )
 else()
     list(APPEND COMPILE_OPTIONS
-        /W3         # enable all "production quality" warnings
+        /W4         # enable all "production quality" warnings
         /we4013     # treat function undefined as error
     )
 endif()
