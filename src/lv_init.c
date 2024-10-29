@@ -469,6 +469,7 @@ void lv_deinit(void)
 }
 
 #include "draw/lv_draw_line.h"
+void lv_foo(void);
 void lv_foo(void)
 {
     lv_draw_line_dsc_t dsc = {.blend_mode = LV_BLEND_MODE_MULTIPLY};
