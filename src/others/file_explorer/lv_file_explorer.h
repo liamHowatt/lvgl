@@ -100,6 +100,7 @@ const char * lv_file_explorer_get_current_path(const lv_obj_t * obj);
  */
 lv_obj_t * lv_file_explorer_get_header(lv_obj_t * obj);
 
+#if LV_FILE_EXPLORER_QUICK_ACCESS
 /**
  * Get file explorer head area obj
  * @param obj   pointer to a file explorer object
@@ -114,7 +115,6 @@ lv_obj_t * lv_file_explorer_get_quick_access_area(lv_obj_t * obj);
  */
 lv_obj_t * lv_file_explorer_get_path_label(lv_obj_t * obj);
 
-#if LV_FILE_EXPLORER_QUICK_ACCESS
 /**
  * Get file explorer places list obj(lv_list)
  * @param obj   pointer to a file explorer object
