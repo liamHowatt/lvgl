@@ -65,7 +65,8 @@ jobs:
     steps:
     - name: Checkout LVGL
       uses: actions/checkout@v4
-      path: components/
+      with:
+        path: components/
     - name: Run get_idf
       run: get_idf
     - name: Set Target ESP32S3
