@@ -641,8 +641,6 @@ static void draw_label(lv_event_t * e)
     layer->_clip_area = clip_area_ori;
 }
 
-#error test error
-
 static void get_sel_area(lv_obj_t * obj, lv_area_t * sel_area)
 {
 
