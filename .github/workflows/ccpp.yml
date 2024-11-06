@@ -65,7 +65,8 @@ jobs:
     steps:
     - name: Checkout LVGL
       uses: actions/checkout@v4
-      working-directory: components
+      with:
+        path: components/lvgl
     - name: Export ESP IDF Environment Variables
       run: . /opt/esp/idf/export.sh
     - name: Set Target ESP32S3
