@@ -67,7 +67,7 @@ void lv_example_scroll_6(void)
         lv_obj_set_width(btn, lv_pct(100));
 
         lv_obj_t * label = lv_label_create(btn);
-        lv_label_set_text_fmt(label, "Button %"LV_PRIu32, i);
+        lv_label_set_text_fmt(label, "Button %""u", i);
     }
 
     /*Update the buttons position manually for first*/

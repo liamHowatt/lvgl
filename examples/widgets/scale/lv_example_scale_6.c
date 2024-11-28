@@ -4,7 +4,7 @@
 #if LV_USE_FLOAT
     #define my_PRIprecise "f"
 #else
-    #define my_PRIprecise LV_PRId32
+    #define my_PRIprecise "d"
 #endif
 
 static lv_obj_t * scale;
