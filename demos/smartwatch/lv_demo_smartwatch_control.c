@@ -23,7 +23,7 @@
 /**********************
  *  STATIC PROTOTYPES
  **********************/
-static void control_screen_create();
+static void control_screen_create(void);
 static void control_screen_event_cb(lv_event_t * e);
 
 static void control_music_events_cb(lv_event_t * e);
@@ -75,7 +75,7 @@ void lv_demo_smartwatch_set_music_control_cb(lv_smartwatch_music_control_cb_t cb
  *   STATIC FUNCTIONS
  **********************/
 
-static void control_screen_create()
+static void control_screen_create(void)
 {
     control_screen = lv_obj_create(NULL);
     lv_obj_remove_flag(control_screen, LV_OBJ_FLAG_SCROLLABLE);

@@ -24,7 +24,7 @@
 /**********************
  *  STATIC PROTOTYPES
  **********************/
-static void qr_screen_create();
+static void qr_screen_create(void);
 static void qr_screen_event_cb(lv_event_t * e);
 
 /**********************
@@ -103,7 +103,7 @@ void lv_demo_smartwatch_qr_load(lv_screen_load_anim_t anim_type, uint32_t time, 
     lv_screen_load_anim(qr_screen, anim_type, time, delay, false);
 }
 
-void lv_demo_smartwatch_qr_list_clear()
+void lv_demo_smartwatch_qr_list_clear(void)
 {
     lv_obj_clean(qr_panel);
 }
@@ -159,7 +159,7 @@ void lv_demo_smartwatch_qr_list_add(uint8_t id, const char * link)
 /**********************
  *   STATIC FUNCTIONS
  **********************/
-static void qr_screen_create()
+static void qr_screen_create(void)
 {
     qr_screen = lv_obj_create(NULL);
     lv_obj_remove_flag(qr_screen, LV_OBJ_FLAG_SCROLLABLE);

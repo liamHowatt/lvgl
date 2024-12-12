@@ -24,7 +24,7 @@
 /**********************
  *  STATIC PROTOTYPES
  **********************/
-static void create_screen_easter_egg();
+static void create_screen_easter_egg(void);
 static void create_screen_event_cb(lv_event_t * e);
 
 static void get_random_position(lv_coord_t * x, lv_coord_t * y, uint64_t * a);
@@ -33,8 +33,8 @@ static void set_obj_pos_angle(lv_obj_t * obj, lv_coord_t x, lv_coord_t y, uint64
 static void animate_drift(lv_obj_t * img);
 static void animate_back_to_center(lv_obj_t * img, uint32_t delay);
 static void drift_timer_cb(lv_timer_t * timer);
-static void start_drift_animation();
-static void stop_drift_animation();
+static void start_drift_animation(void);
+static void stop_drift_animation(void);
 
 /**********************
  *  STATIC VARIABLES
@@ -209,7 +209,7 @@ static void drift_timer_cb(lv_timer_t * timer)
 /**
  * Start drift animations on screen load
  */
-static void start_drift_animation()
+static void start_drift_animation(void)
 {
     /* Create a timer for each image to trigger the drift animation repeatedly */
     drift_timer_black = lv_timer_create(drift_timer_cb, 3000, lvgl_logo_black);
@@ -228,7 +228,7 @@ static void start_drift_animation()
 /**
  * Stop animations on screen unload
  */
-static void stop_drift_animation()
+static void stop_drift_animation(void)
 {
     /* Stop and delete each timer individually */
     if(drift_timer_black != NULL) {
@@ -252,7 +252,7 @@ static void stop_drift_animation()
     }
 }
 
-static void create_screen_easter_egg()
+static void create_screen_easter_egg(void)
 {
 
     easter_egg_screen = lv_obj_create(NULL);

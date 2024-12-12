@@ -24,7 +24,7 @@
 /**********************
  *  STATIC PROTOTYPES
  **********************/
-static void create_screen_notifications();
+static void create_screen_notifications(void);
 static void notification_screen_events_cb(lv_event_t * e);
 static void notification_clicked_event_cb(lv_event_t * e);
 
@@ -95,7 +95,7 @@ void lv_demo_smartwatch_notifications_load(lv_screen_load_anim_t anim_type, uint
     lv_screen_load_anim(notification_screen, anim_type, time, delay, false);
 }
 
-void lv_demo_smartwatch_clear_notifications()
+void lv_demo_smartwatch_clear_notifications(void)
 {
     lv_obj_set_parent(empty_info, empty_panel);
     lv_obj_clean(message_list);
@@ -266,7 +266,7 @@ static void notification_screen_events_cb(lv_event_t * e)
     }
 }
 
-static void create_screen_notifications()
+static void create_screen_notifications(void)
 {
 
     notification_screen = lv_obj_create(NULL);

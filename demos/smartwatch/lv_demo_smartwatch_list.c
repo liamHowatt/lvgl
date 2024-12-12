@@ -34,7 +34,7 @@ typedef struct {
 /**********************
  *  STATIC PROTOTYPES
  **********************/
-static void create_screen_list();
+static void create_screen_list(void);
 static void add_external_app(const char * app_name, int index, const void * img);
 static void add_app_list(const char * app_name, int index, const void * img);
 
@@ -245,7 +245,7 @@ static void add_app_list(const char * app_name, int index, const void * img)
     lv_obj_add_event_cb(panel, app_list_clicked_event_cb, LV_EVENT_CLICKED, (void *)(intptr_t)index);
 }
 
-static void create_screen_list()
+static void create_screen_list(void)
 {
 
     app_list_screen = lv_obj_create(NULL);

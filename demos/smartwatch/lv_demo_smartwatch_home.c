@@ -34,7 +34,7 @@ typedef struct {
 /**********************
  *  STATIC PROTOTYPES
  **********************/
-static void create_screen_home();
+static void create_screen_home(void);
 
 static void lv_demo_smartwatch_add_watchface(const char * name, const lv_image_dsc_t * src, int index);
 static void clock_screen_event_cb(lv_event_t * e);
@@ -182,7 +182,7 @@ void lv_demo_smartwatch_home_set_time(int minute, int hour, const char * am_pm, 
     lv_label_set_text(am_pm_label, am_pm);
 }
 
-lv_obj_t * lv_demo_smartwatch_face_get_root()
+lv_obj_t * lv_demo_smartwatch_face_get_root(void)
 {
     return home_screen;
 }
@@ -282,7 +282,7 @@ static void lv_demo_smartwatch_add_watchface(const char * name, const lv_image_d
     lv_obj_add_event_cb(ui_faceItem, lv_demo_smartwatch_face_selected_cb, LV_EVENT_ALL, (void *)(intptr_t)index);
 }
 
-static void create_screen_home()
+static void create_screen_home(void)
 {
     clock_screen = lv_obj_create(NULL);
     lv_obj_remove_flag(clock_screen, LV_OBJ_FLAG_SCROLLABLE);

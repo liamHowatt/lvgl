@@ -124,7 +124,7 @@ void lv_demo_smartwatch_register_app_cb(const char * name, const lv_image_dsc_t 
 /**
  * Clear the notification list
  */
-void lv_demo_smartwatch_clear_notifications();
+void lv_demo_smartwatch_clear_notifications(void);
 
 /**
  * Add a notification to the list
@@ -174,12 +174,12 @@ void lv_demo_smartwatch_set_weather(int temp, uint8_t icon, bool day, int hour, 
 /**
  * Clear daily forecast list
  */
-void lv_demo_smartwatch_weather_daily_clear();
+void lv_demo_smartwatch_weather_daily_clear(void);
 
 /**
  * Clear hourly forecast list
  */
-void lv_demo_smartwatch_weather_hourly_clear();
+void lv_demo_smartwatch_weather_hourly_clear(void);
 
 /**
  * Add daily forecast weather to the list
@@ -204,7 +204,7 @@ void lv_demo_smartwatch_weather_add_hourly(int hour, int id, int temp, int humid
 /**
  * Clear the qr codes in list
  */
-void lv_demo_smartwatch_qr_list_clear();
+void lv_demo_smartwatch_qr_list_clear(void);
 
 /**
  * Add qr codes to the list

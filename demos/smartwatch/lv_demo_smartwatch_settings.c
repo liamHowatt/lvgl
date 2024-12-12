@@ -31,7 +31,7 @@ typedef enum {
 /**********************
  *  STATIC PROTOTYPES
  **********************/
-static void create_screen_settings();
+static void create_screen_settings(void);
 static void settings_action_event_cb(lv_event_t * e);
 static void settings_screen_event_cb(lv_event_t * e);
 
@@ -349,7 +349,7 @@ static void settings_screen_event_cb(lv_event_t * e)
     }
 }
 
-static void create_screen_settings()
+static void create_screen_settings(void)
 {
 
     settings_screen = lv_obj_create(NULL);
