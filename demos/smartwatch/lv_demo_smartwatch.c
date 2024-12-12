@@ -97,7 +97,7 @@ void lv_demo_smartwatch(void)
 
     create_dialog_window();
 
-    /* load the logo screen imediately, more like a boot logo */
+    /* load the logo screen immediately, more like a boot logo */
     lv_demo_smartwatch_easter_egg_load(LV_SCR_LOAD_ANIM_FADE_IN, 0, 0);
 
     /* load the home screen after 2500ms */

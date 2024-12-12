@@ -143,19 +143,19 @@ void lv_demo_smartwatch_add_notification(int app_id, const char * message, int i
 void lv_demo_smartwatch_show_notification(int app_id, const char * message, const char * time);
 
 /**
- * Set the callback funtion when a notification is clicked
+ * Set the callback function when a notification is clicked
  * @param cb callback function
  */
 void lv_demo_smartwatch_set_notification_click_cb(lv_smartwatch_notification_click_cb_t cb);
 
 /**
- * Set the callback funtion for settings actions
+ * Set the callback function for settings actions
  * @param cb    callback function
  */
 void lv_demo_smartwatch_set_settings_actions_cb(lv_smartwatch_settings_change_cb_t cb);
 
 /**
- * Set the callback funtion for music control
+ * Set the callback function for music control
  * @param cb callback function
  */
 void lv_demo_smartwatch_set_music_control_cb(lv_smartwatch_music_control_cb_t cb);

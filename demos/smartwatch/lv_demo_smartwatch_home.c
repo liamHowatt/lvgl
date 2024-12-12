@@ -148,7 +148,7 @@ void lv_demo_smartwatch_face_selected_cb(lv_event_t * e)
     int index = (int)(intptr_t)lv_event_get_user_data(e);
 
     if(target == home_screen) {
-        /* the event might be trigerred after watchface has been selected, return immediately */
+        /* the event might be triggered after watchface has been selected, return immediately */
         return;
     }
 

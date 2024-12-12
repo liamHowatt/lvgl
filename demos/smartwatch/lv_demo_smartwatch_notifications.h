@@ -64,7 +64,7 @@ void lv_demo_smartwatch_add_notification(int app_id, const char * message, int i
 void lv_demo_smartwatch_show_notification(int app_id, const char * message, const char * time);
 
 /**
- * Set the callback funtion when a notification is clicked
+ * Set the callback function when a notification is clicked
  * @param cb callback function [user should call lv_demo_smartwatch_show_notification() to show the notification]
  */
 void lv_demo_smartwatch_set_notification_click_cb(lv_smartwatch_notification_click_cb_t cb);
