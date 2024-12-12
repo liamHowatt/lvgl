@@ -35,7 +35,6 @@ static void settings_button_event_cb(lv_event_t * e);
  *  STATIC VARIABLES
  **********************/
 static lv_obj_t * control_screen;
-static lv_obj_t * control_title;
 static lv_obj_t * control_music_play;
 static lv_obj_t * control_music_previous;
 static lv_obj_t * control_music_next;
@@ -222,7 +221,6 @@ static void control_screen_create(void)
 static void control_screen_event_cb(lv_event_t * e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
-    lv_obj_t * target = lv_event_get_target(e);
     if(event_code == LV_EVENT_GESTURE && lv_indev_get_gesture_dir(lv_indev_active()) == LV_DIR_TOP) {
         lv_demo_smartwatch_home_load(LV_SCR_LOAD_ANIM_MOVE_TOP, 500, 0);
     }
@@ -237,7 +235,6 @@ static void qr_button_event_cb(lv_event_t * e)
         return;
     }
     lv_event_code_t event_code = lv_event_get_code(e);
-    lv_obj_t * target = lv_event_get_target(e);
     if(event_code == LV_EVENT_CLICKED) {
         lv_demo_smartwatch_set_load_app_list(false);
         lv_demo_smartwatch_qr_load(LV_SCR_LOAD_ANIM_MOVE_BOTTOM, 500, 0);
@@ -253,7 +250,6 @@ static void close_button_event_cb(lv_event_t * e)
         return;
     }
     lv_event_code_t event_code = lv_event_get_code(e);
-    lv_obj_t * target = lv_event_get_target(e);
     if(event_code == LV_EVENT_CLICKED) {
         lv_demo_smartwatch_home_load(LV_SCR_LOAD_ANIM_MOVE_TOP, 500, 0);
     }
@@ -268,7 +264,6 @@ static void settings_button_event_cb(lv_event_t * e)
         return;
     }
     lv_event_code_t event_code = lv_event_get_code(e);
-    lv_obj_t * target = lv_event_get_target(e);
     if(event_code == LV_EVENT_CLICKED) {
         lv_demo_smartwatch_settings_load(LV_SCR_LOAD_ANIM_FADE_IN, 500, 0);
     }
@@ -283,7 +278,6 @@ static void control_music_events_cb(lv_event_t * e)
         return;
     }
     lv_event_code_t event_code = lv_event_get_code(e);
-    lv_obj_t * target = lv_event_get_target(e);
     if(event_code == LV_EVENT_CLICKED) {
         uint16_t code = (uint16_t)(intptr_t)lv_event_get_user_data(e);
 

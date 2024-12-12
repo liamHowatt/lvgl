@@ -106,7 +106,6 @@ void lv_demo_smartwatch_home_load(lv_screen_load_anim_t anim_type, uint32_t time
 void lv_demo_smartwatch_face_events_cb(lv_event_t * e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
-    lv_obj_t * target = lv_event_get_target(e);
     if(event_code == LV_EVENT_GESTURE && lv_indev_get_gesture_dir(lv_indev_active()) == LV_DIR_RIGHT) {
         lv_demo_smartwatch_set_load_app_list(false); /* flag was not open from app list */
         lv_demo_smartwatch_notifications_load(LV_SCR_LOAD_ANIM_OVER_RIGHT, 500, 0);
@@ -153,7 +152,7 @@ void lv_demo_smartwatch_face_selected_cb(lv_event_t * e)
     }
 
     if(event_code == LV_EVENT_CLICKED) {
-        if(index >= num_faces) {
+        if((uint32_t)index >= num_faces) {
             LV_LOG_WARN("Selected watchface index exceeds available faces.");
             return;
         }
@@ -191,7 +190,7 @@ void lv_demo_smartwatch_face_update_seconds(int second)
 {
     lv_anim_custom_delete(&seconds_animation, NULL);
 
-    for(int i = 0; i < num_faces; i++) {
+    for(int i = 0; (uint32_t)i < num_faces; i++) {
         if(faces[i].seconds != NULL) {
             lv_image_set_rotation(*faces[i].seconds, second * 60);
             animate_analog_seconds(*faces[i].seconds);
