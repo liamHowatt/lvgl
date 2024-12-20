@@ -92,7 +92,7 @@ Update mode
 Chart layers
 ------------
 When a chart is drawn, certain things appear on top of other things, in this
-oder, from back to front:
+order, from back to front:
 
 - The chart's background (with optional division lines)
 - Each data series:
@@ -112,10 +112,10 @@ oder, from back to front:
 Parts and Styles
 ****************
 
--  :cpp:enumerator:`LV_PART_MAIN` The background of the chart. Uses all the typical
-   background and *line* (for division lines) related style
-   properties. *Padding* makes the series area smaller. For BAR
-   charts ``pad_column`` sets the space between bars in the same data series.
+-  :cpp:enumerator:`LV_PART_MAIN` The background of the chart. Uses the :ref:`typical
+   background <typical bg props>` and line style properties (for division lines).
+   *Padding* makes the series area smaller. For BAR charts ``pad_column`` sets the
+   space between bars in the same data series.
 -  :cpp:enumerator:`LV_PART_SCROLLBAR` A scrollbar used if the chart is zoomed. See
    :ref:`base_widget`'s documentation for details.
 -  :cpp:enumerator:`LV_PART_ITEMS` Refers to the LINE or BAR data series.
@@ -220,12 +220,12 @@ Modifying data
 You have several options to set the Y-values for a data series:
 
 1. Set the values programmatically in the array like ``ser1->points[3] = 7`` and refresh the
-   chart with :cpp:enumerator:`lv_chart_refresh(chart)`.
+   chart with :cpp:expr:`lv_chart_refresh(chart)`.
 2. Use :cpp:expr:`lv_chart_set_value_by_id(chart, series, id, value)` where ``id`` is
    the zero-based index of the point you wish to update.
 3. Use :cpp:expr:`lv_chart_set_next_value(chart, series, value)`.
    (See `Update modes`_ below.)
-4. Set all points to a single Y-value with :cpp:expr:`lv_chart_set_all_value(chart, series, value)`.
+4. Set all points to a single Y-value with :cpp:expr:`lv_chart_set_all_values(chart, series, value)`.
 
 Use :c:macro:`LV_CHART_POINT_NONE` as value to make the library skip drawing
 that point, column, or scatter-point.

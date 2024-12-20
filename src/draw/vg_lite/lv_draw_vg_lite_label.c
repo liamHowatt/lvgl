@@ -24,7 +24,6 @@
  *      DEFINES
  *********************/
 
-#define PATH_QUALITY VG_LITE_HIGH
 #define PATH_DATA_COORD_FORMAT VG_LITE_S16
 
 #if LV_VG_LITE_FLUSH_MAX_COUNT > 0
@@ -101,6 +100,7 @@ static void draw_letter_cb(lv_draw_unit_t * draw_unit, lv_draw_glyph_dsc_t * gly
         switch(glyph_draw_dsc->format) {
             case LV_FONT_GLYPH_FORMAT_A1:
             case LV_FONT_GLYPH_FORMAT_A2:
+            case LV_FONT_GLYPH_FORMAT_A3:
             case LV_FONT_GLYPH_FORMAT_A4:
             case LV_FONT_GLYPH_FORMAT_A8:
             case LV_FONT_GLYPH_FORMAT_A1_ALIGNED:
@@ -357,7 +357,6 @@ static void freetype_outline_event_cb(lv_event_t * e)
     switch(code) {
         case LV_EVENT_CREATE:
             param->outline = lv_vg_lite_path_create(PATH_DATA_COORD_FORMAT);
-            lv_vg_lite_path_set_quality(param->outline, PATH_QUALITY);
             break;
         case LV_EVENT_DELETE:
             lv_vg_lite_path_destroy(param->outline);

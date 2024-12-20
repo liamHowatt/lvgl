@@ -36,7 +36,7 @@ static void lv_cleanup_task(lv_draw_task_t * t, lv_display_t * disp);
 
 static inline uint32_t get_layer_size_kb(uint32_t size_byte)
 {
-    return size_byte < 1024 ? 1 : size_byte >> 10;
+    return (size_byte + 1023) >> 10;
 }
 
 /**********************
@@ -139,7 +139,13 @@ void lv_draw_finalize_task_creation(lv_layer_t * layer, lv_draw_task_t * t)
         t->preferred_draw_unit_id = 0;
         lv_draw_unit_t * u = info->unit_head;
         while(u) {
-            if(u->evaluate_cb) u->evaluate_cb(u, t);
+            if(u->evaluate_cb) {
+                LV_PROFILER_DRAW_BEGIN_TAG("evaluate_cb");
+                LV_PROFILER_DRAW_BEGIN_TAG(u->name);
+                u->evaluate_cb(u, t);
+                LV_PROFILER_DRAW_END_TAG(u->name);
+                LV_PROFILER_DRAW_END_TAG("evaluate_cb");
+            }
             u = u->next;
         }
         if(t->preferred_draw_unit_id == LV_DRAW_UNIT_NONE) {
@@ -156,7 +162,13 @@ void lv_draw_finalize_task_creation(lv_layer_t * layer, lv_draw_task_t * t)
         t->preferred_draw_unit_id = 0;
         lv_draw_unit_t * u = info->unit_head;
         while(u) {
-            if(u->evaluate_cb) u->evaluate_cb(u, t);
+            if(u->evaluate_cb) {
+                LV_PROFILER_DRAW_BEGIN_TAG("evaluate_cb");
+                LV_PROFILER_DRAW_BEGIN_TAG(u->name);
+                u->evaluate_cb(u, t);
+                LV_PROFILER_DRAW_END_TAG(u->name);
+                LV_PROFILER_DRAW_END_TAG("evaluate_cb");
+            }
             u = u->next;
         }
     }
@@ -166,12 +178,19 @@ void lv_draw_finalize_task_creation(lv_layer_t * layer, lv_draw_task_t * t)
 void lv_draw_wait_for_finish(void)
 {
 #if LV_USE_OS
+    LV_PROFILER_DRAW_BEGIN;
     lv_draw_unit_t * u = _draw_info.unit_head;
     while(u) {
-        if(u->wait_for_finish_cb)
+        if(u->wait_for_finish_cb) {
+            LV_PROFILER_DRAW_BEGIN_TAG("wait_for_finish_cb");
+            LV_PROFILER_DRAW_BEGIN_TAG(u->name);
             u->wait_for_finish_cb(u);
+            LV_PROFILER_DRAW_END_TAG(u->name);
+            LV_PROFILER_DRAW_END_TAG("wait_for_finish_cb");
+        }
         u = u->next;
     }
+    LV_PROFILER_DRAW_END;
 #endif
 }
 
@@ -242,7 +261,11 @@ bool lv_draw_dispatch_layer(lv_display_t * disp, lv_layer_t * layer)
         /*Let all draw units to pick draw tasks*/
         lv_draw_unit_t * u = _draw_info.unit_head;
         while(u) {
+            LV_PROFILER_DRAW_BEGIN_TAG("dispatch_cb");
+            LV_PROFILER_DRAW_BEGIN_TAG(u->name);
             int32_t taken_cnt = u->dispatch_cb(u, layer);
+            LV_PROFILER_DRAW_END_TAG(u->name);
+            LV_PROFILER_DRAW_END_TAG("dispatch_cb");
             if(taken_cnt != LV_DRAW_UNIT_IDLE) task_dispatched = true;
             u = u->next;
         }
@@ -254,21 +277,25 @@ bool lv_draw_dispatch_layer(lv_display_t * disp, lv_layer_t * layer)
 
 void lv_draw_dispatch_wait_for_request(void)
 {
+    LV_PROFILER_DRAW_BEGIN;
 #if LV_USE_OS
     lv_thread_sync_wait(&_draw_info.sync);
 #else
     while(!_draw_info.dispatch_req);
     _draw_info.dispatch_req = 0;
 #endif
+    LV_PROFILER_DRAW_END;
 }
 
 void lv_draw_dispatch_request(void)
 {
+    LV_PROFILER_DRAW_BEGIN;
 #if LV_USE_OS
     lv_thread_sync_signal(&_draw_info.sync);
 #else
     _draw_info.dispatch_req = 1;
 #endif
+    LV_PROFILER_DRAW_END;
 }
 
 uint32_t lv_draw_get_unit_count(void)
@@ -409,8 +436,10 @@ void lv_draw_layer_init(lv_layer_t * layer, lv_layer_t * parent_layer, lv_color_
 
 void * lv_draw_layer_alloc_buf(lv_layer_t * layer)
 {
+    LV_PROFILER_DRAW_BEGIN;
     /*If the buffer of the layer is already allocated return it*/
     if(layer->draw_buf != NULL) {
+        LV_PROFILER_DRAW_END;
         return layer->draw_buf->data;
     }
 
@@ -419,20 +448,31 @@ void * lv_draw_layer_alloc_buf(lv_layer_t * layer)
     int32_t h = lv_area_get_height(&layer->buf_area);
     uint32_t layer_size_byte = h * lv_draw_buf_width_to_stride(w, layer->color_format);
 
+#if LV_DRAW_LAYER_MAX_MEMORY > 0
+    /* Do not allocate the layer if the sum of allocated layer sizes
+     * will exceed `LV_DRAW_LAYER_MAX_MEMORY` */
+    if((_draw_info.used_memory_for_layers + layer_size_byte) > LV_DRAW_LAYER_MAX_MEMORY) {
+        LV_LOG_WARN("LV_DRAW_LAYER_MAX_MEMORY was reached when allocating the layer.");
+        return NULL;
+    }
+#endif
+
     layer->draw_buf = lv_draw_buf_create(w, h, layer->color_format, 0);
 
     if(layer->draw_buf == NULL) {
         LV_LOG_WARN("Allocating layer buffer failed. Try later");
+        LV_PROFILER_DRAW_END;
         return NULL;
     }
 
-    _draw_info.used_memory_for_layers_kb += get_layer_size_kb(layer_size_byte);
-    LV_LOG_INFO("Layer memory used: %" LV_PRIu32 " kB\n", _draw_info.used_memory_for_layers_kb);
+    _draw_info.used_memory_for_layers += layer_size_byte;
+    LV_LOG_INFO("Layer memory used: %" LV_PRIu32 " kB", get_layer_size_kb(_draw_info.used_memory_for_layers));
 
     if(lv_color_format_has_alpha(layer->color_format)) {
         lv_draw_buf_clear(layer->draw_buf, NULL);
     }
 
+    LV_PROFILER_DRAW_END;
     return layer->draw_buf->data;
 }
 
@@ -494,6 +534,7 @@ static bool is_independent(lv_layer_t * layer, lv_draw_task_t * t_check)
  */
 static void lv_cleanup_task(lv_draw_task_t * t, lv_display_t * disp)
 {
+    LV_PROFILER_DRAW_BEGIN;
     /*If it was layer drawing free the layer too*/
     if(t->type == LV_DRAW_TASK_TYPE_LAYER) {
         lv_draw_image_dsc_t * draw_image_dsc = t->draw_dsc;
@@ -503,8 +544,14 @@ static void lv_cleanup_task(lv_draw_task_t * t, lv_display_t * disp)
             int32_t h = lv_area_get_height(&layer_drawn->buf_area);
             uint32_t layer_size_byte = h * layer_drawn->draw_buf->header.stride;
 
-            _draw_info.used_memory_for_layers_kb -= get_layer_size_kb(layer_size_byte);
-            LV_LOG_INFO("Layer memory used: %" LV_PRIu32 " kB\n", _draw_info.used_memory_for_layers_kb);
+            if(_draw_info.used_memory_for_layers >= layer_size_byte) {
+                _draw_info.used_memory_for_layers -= layer_size_byte;
+            }
+            else {
+                _draw_info.used_memory_for_layers = 0;
+                LV_LOG_WARN("More layers were freed than allocated");
+            }
+            LV_LOG_INFO("Layer memory used: %" LV_PRIu32 " kB", get_layer_size_kb(_draw_info.used_memory_for_layers));
             lv_draw_buf_destroy(layer_drawn->draw_buf);
             layer_drawn->draw_buf = NULL;
         }
@@ -520,7 +567,11 @@ static void lv_cleanup_task(lv_draw_task_t * t, lv_display_t * disp)
                 l2 = l2->next;
             }
 
-            if(disp->layer_deinit) disp->layer_deinit(disp, layer_drawn);
+            if(disp->layer_deinit) {
+                LV_PROFILER_DRAW_BEGIN_TAG("layer_deinit");
+                disp->layer_deinit(disp, layer_drawn);
+                LV_PROFILER_DRAW_END_TAG("layer_deinit");
+            }
             lv_free(layer_drawn);
         }
     }
@@ -532,5 +583,5 @@ static void lv_cleanup_task(lv_draw_task_t * t, lv_display_t * disp)
 
     lv_free(t->draw_dsc);
     lv_free(t);
-
+    LV_PROFILER_DRAW_END;
 }

@@ -7,7 +7,7 @@
  *      INCLUDES
  *********************/
 #include "lv_demo_widgets.h"
-#include "../../src/lvgl_private.h"
+#include "../../lvgl_private.h"
 
 #if LV_USE_DEMO_WIDGETS
 
@@ -235,7 +235,7 @@ void lv_demo_widgets_start_slideshow(void)
     lv_anim_init(&a);
     lv_anim_set_exec_cb(&a, scroll_anim_y_cb);
     lv_anim_set_duration(&a, t);
-    lv_anim_set_playback_duration(&a, t);
+    lv_anim_set_reverse_duration(&a, t);
     lv_anim_set_values(&a, 0, v);
     lv_anim_set_var(&a, tab);
     lv_anim_set_completed_cb(&a, slideshow_anim_completed_cb);
@@ -262,7 +262,7 @@ static void profile_create(lv_obj_t * parent)
     lv_obj_t * dsc = lv_label_create(panel1);
     lv_obj_add_style(dsc, &style_text_muted, 0);
     lv_label_set_text_static(dsc, "This is a short description of me. Take a look at my profile!");
-    lv_label_set_long_mode(dsc, LV_LABEL_LONG_WRAP);
+    lv_label_set_long_mode(dsc, LV_LABEL_LONG_MODE_WRAP);
 
     lv_obj_t * email_icn = lv_label_create(panel1);
     lv_obj_add_style(email_icn, &style_icon, 0);
@@ -701,7 +701,7 @@ static void analytics_create(lv_obj_t * parent)
     lv_anim_set_exec_cb(&a, scale1_indic1_anim_cb);
     lv_anim_set_var(&a, arc);
     lv_anim_set_duration(&a, 4100);
-    lv_anim_set_playback_duration(&a, 2700);
+    lv_anim_set_reverse_duration(&a, 2700);
     lv_anim_start(&a);
 
     arc = lv_arc_create(scale1);
@@ -717,7 +717,7 @@ static void analytics_create(lv_obj_t * parent)
     lv_anim_set_exec_cb(&a, scale1_indic1_anim_cb);
     lv_anim_set_var(&a, arc);
     lv_anim_set_duration(&a, 2600);
-    lv_anim_set_playback_duration(&a, 3200);
+    lv_anim_set_reverse_duration(&a, 3200);
     lv_anim_start(&a);
 
     arc = lv_arc_create(scale1);
@@ -733,7 +733,7 @@ static void analytics_create(lv_obj_t * parent)
     lv_anim_set_exec_cb(&a, scale1_indic1_anim_cb);
     lv_anim_set_var(&a, arc);
     lv_anim_set_duration(&a, 2800);
-    lv_anim_set_playback_duration(&a, 1800);
+    lv_anim_set_reverse_duration(&a, 1800);
     lv_anim_start(&a);
 
     /*Scale 2*/
@@ -864,7 +864,7 @@ static void analytics_create(lv_obj_t * parent)
     lv_anim_set_exec_cb(&a, scale3_anim_cb);
     lv_anim_set_var(&a, scale3);
     lv_anim_set_duration(&a, 4100);
-    lv_anim_set_playback_duration(&a, 800);
+    lv_anim_set_reverse_duration(&a, 800);
     lv_anim_start(&a);
 
     lv_obj_align(scale3_mbps_label, LV_ALIGN_TOP_MID, 10, lv_pct(55));
@@ -1324,7 +1324,7 @@ static void birthday_event_cb(lv_event_t * e)
                 if(disp_size == DISP_SMALL) lv_obj_set_size(calendar, 180, 200);
                 else if(disp_size == DISP_MEDIUM) lv_obj_set_size(calendar, 200, 220);
                 else  lv_obj_set_size(calendar, 300, 330);
-                lv_calendar_set_showed_date(calendar, 1990, 01);
+                lv_calendar_set_month_shown(calendar, 1990, 01);
                 lv_obj_align(calendar, LV_ALIGN_CENTER, 0, 30);
                 lv_obj_add_event_cb(calendar, calendar_event_cb, LV_EVENT_ALL, ta);
 
@@ -1673,7 +1673,7 @@ static void slideshow_anim_completed_cb(lv_anim_t * a_old)
     lv_anim_init(&a);
     lv_anim_set_exec_cb(&a, scroll_anim_y_cb);
     lv_anim_set_duration(&a, t);
-    lv_anim_set_playback_duration(&a, t);
+    lv_anim_set_reverse_duration(&a, t);
     lv_anim_set_values(&a, 0, v);
     lv_anim_set_var(&a, tab);
     lv_anim_set_completed_cb(&a, slideshow_anim_completed_cb);
