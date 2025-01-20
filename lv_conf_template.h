@@ -1292,6 +1292,9 @@
 /** High-resolution demo */
 #define LV_USE_DEMO_HIGH_RES        0
 
+/** ECG demo */
+#define LV_USE_DEMO_ECG        0
+
 /*--END OF LV_CONF_H--*/
 
 #endif /*LV_CONF_H*/

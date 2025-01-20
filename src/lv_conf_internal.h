@@ -4178,6 +4178,15 @@
     #endif
 #endif
 
+/** ECG demo */
+#ifndef LV_USE_DEMO_ECG
+    #ifdef CONFIG_LV_USE_DEMO_ECG
+        #define LV_USE_DEMO_ECG CONFIG_LV_USE_DEMO_ECG
+    #else
+        #define LV_USE_DEMO_ECG        0
+    #endif
+#endif
+
 
 
 /*----------------------------------

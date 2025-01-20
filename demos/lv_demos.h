@@ -67,6 +67,10 @@ extern "C" {
 #include "high_res/lv_demo_high_res.h"
 #endif
 
+#if LV_USE_DEMO_ECG
+#include "ecg/lv_demo_ecg.h"
+#endif
+
 /*********************
  *      DEFINES
  *********************/
