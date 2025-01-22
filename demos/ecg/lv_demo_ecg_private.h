@@ -21,14 +21,31 @@ extern "C" {
 #include "../../src/widgets/label/lv_label.h"
 #include "../../src/widgets/image/lv_image.h"
 #include "../../src/widgets/line/lv_line.h"
+#include "../../src/widgets/canvas/lv_canvas.h"
+#include "../../src/draw/lv_draw_vector.h"
 
 /*********************
  *      DEFINES
  *********************/
 
+#define FIXED_L    40
+#define FIXED_XL   80
+
 /**********************
  *      TYPEDEFS
  **********************/
+
+typedef enum {
+    LV_DEMO_ECG_POINT_TYPE_INVALID = 0,
+    LV_DEMO_ECG_POINT_TYPE_L,
+    LV_DEMO_ECG_POINT_TYPE_C,
+    LV_DEMO_ECG_POINT_TYPE_END
+} lv_demo_ecg_point_type_t;
+
+typedef struct {
+    lv_demo_ecg_point_type_t type;
+    lv_fpoint_t pt;
+} lv_demo_ecg_point_t;
 
 enum {
     SIZE_SM = 0,
