@@ -21,89 +21,104 @@ extern "C" {
 #include "../../src/widgets/label/lv_label.h"
 #include "../../src/widgets/image/lv_image.h"
 #include "../../src/widgets/line/lv_line.h"
-#include "../../src/widgets/canvas/lv_canvas.h"
-#include "../../src/draw/lv_draw_vector.h"
+#include "../../src/libs/tiny_ttf/lv_tiny_ttf.h"
+#include "../../src/widgets/tileview/lv_tileview.h"
 
 /*********************
  *      DEFINES
  *********************/
 
-#define FIXED_L    40
-#define FIXED_XL   80
+/* size primitives */
+#define PRIM_L    40
+#define PRIM_XL   80
 
 /**********************
  *      TYPEDEFS
  **********************/
 
-typedef enum {
-    LV_DEMO_ECG_POINT_TYPE_INVALID = 0,
-    LV_DEMO_ECG_POINT_TYPE_L,
-    LV_DEMO_ECG_POINT_TYPE_C,
-    LV_DEMO_ECG_POINT_TYPE_END
-} lv_demo_ecg_point_type_t;
-
-typedef struct {
-    lv_demo_ecg_point_type_t type;
-    lv_fpoint_t pt;
-} lv_demo_ecg_point_t;
+enum {
+    DISP_SIZE_SM = 0,
+    DISP_SIZE_LG,
+    DISP_SIZE_COUNT
+};
 
 enum {
-    SIZE_SM = 0,
-    SIZE_LG,
+    SIZE_FONT_DISPLAY_BIG_NUMERIC_XL = 0,
+    SIZE_FONT_DISPLAY_BIG_NUMERIC_M,
+    SIZE_FONT_DISPLAY_BIG_NUMERIC_S,
+    SIZE_FONT_DISPLAY_STANDARD_XL,
+    SIZE_FONT_DISPLAY_STANDARD_L,
+    SIZE_FONT_DISPLAY_STANDARD_M,
+    SIZE_FONT_DISPLAY_STANDARD_S,
+    SIZE_FONT_HEADER_H4,
+    SIZE_FONT_BODY_L,
+    SIZE_FONT_BODY_S,
+    SIZE_FONT_LABEL_STANDARD,
+    SIZE_FONT_LABEL_BIG_NUMERIC,
     SIZE_COUNT
 };
 
-typedef struct {
-    const lv_font_t * font_disp_1;
-    const lv_font_t * font_disp_2;
-    const lv_font_t * font_disp_3;
-    const lv_font_t * font_body_lg;
-    const lv_font_t * font_body_md;
-    const lv_font_t * font_body_sm;
-    const lv_font_t * font_caption;
-} lv_demo_ecg_sizes_t;
+enum {
+    FONT_DISPLAY_BIG_NUMERIC_XL = 0,
+    FONT_DISPLAY_BIG_NUMERIC_M,
+    FONT_DISPLAY_BIG_NUMERIC_S,
+    FONT_DISPLAY_STANDARD_XL,
+    FONT_DISPLAY_STANDARD_L,
+    FONT_DISPLAY_STANDARD_M,
+    FONT_DISPLAY_STANDARD_S,
+    FONT_HEADER_H4,
+    FONT_BODY_L,
+    FONT_BODY_S,
+    FONT_LABEL_STANDARD_LARGE,
+    FONT_LABEL_STANDARD_SMALL,
+    FONT_LABEL_BIG_NUMERIC_LARGE,
+    FONT_LABEL_BIG_NUMERIC_SMALL,
+
+    FONT_QUICKSAND_LIGHT_290,
+    FONT_QUICKSAND_LIGHT_140,
+    FONT_QUICKSAND_BOLD_27,
+    FONT_QUICKSAND_MEDIUM_24,
+    FONT_QUICKSAND_MEDIUM_22,
+    FONT_INTER_MEDIUM_16,
+    FONT_COUNT
+};
 
 enum {
-    STYLE_OBJ = 0,
+    STYLE_CONTAINER_BG_MAIN_FRAME = 0,
     STYLE_LABEL,
+    STYLE_A8_IMG,
+    STYLE_BUTTON_BORDER_SOFT,
+    STYLE_CONTAINER_FILL_INVERT,
+    STYLE_CONTAINER_BG_PRIMARY,
     STYLE_COUNT
 };
 
 enum {
-    THEME_DARK = 0
+    THEME_LIGHT = 0,
+    THEME_DARK
 };
 
 typedef struct {
     int32_t sz;                      /* sizes */
+    lv_font_t * fonts[FONT_COUNT];
     lv_style_t styles[STYLE_COUNT];
     lv_subject_t th;                 /* theme int */
 } lv_demo_ecg_ctx_t;
 
-LV_IMAGE_DECLARE(img_lv_demo_ecg_battery);
 LV_IMAGE_DECLARE(img_lv_demo_ecg_alarm_disabled);
+LV_IMAGE_DECLARE(img_lv_demo_ecg_battery);
 LV_IMAGE_DECLARE(img_lv_demo_ecg_circuit);
-LV_IMAGE_DECLARE(img_lv_demo_ecg_eye);
-LV_IMAGE_DECLARE(img_lv_demo_ecg_figure);
+LV_IMAGE_DECLARE(img_lv_demo_ecg_figure_lg);
+LV_IMAGE_DECLARE(img_lv_demo_ecg_figure_sm);
 LV_IMAGE_DECLARE(img_lv_demo_ecg_gear);
+LV_IMAGE_DECLARE(img_lv_demo_ecg_heart);
+LV_IMAGE_DECLARE(img_lv_demo_ecg_logo);
+LV_IMAGE_DECLARE(img_lv_demo_ecg_monitor);
 LV_IMAGE_DECLARE(img_lv_demo_ecg_moon);
 LV_IMAGE_DECLARE(img_lv_demo_ecg_sun);
+LV_IMAGE_DECLARE(img_lv_demo_ecg_view);
 
-LV_FONT_DECLARE(font_lv_demo_ecg_roboto_slab_14);
-LV_FONT_DECLARE(font_lv_demo_ecg_roboto_slab_16);
-LV_FONT_DECLARE(font_lv_demo_ecg_roboto_slab_18);
-LV_FONT_DECLARE(font_lv_demo_ecg_roboto_slab_20);
-LV_FONT_DECLARE(font_lv_demo_ecg_roboto_slab_22);
-LV_FONT_DECLARE(font_lv_demo_ecg_roboto_slab_24);
-LV_FONT_DECLARE(font_lv_demo_ecg_roboto_slab_28);
-LV_FONT_DECLARE(font_lv_demo_ecg_roboto_slab_34);
-LV_FONT_DECLARE(font_lv_demo_ecg_roboto_slab_64);
-LV_FONT_DECLARE(font_lv_demo_ecg_roboto_slab_84);
-LV_FONT_DECLARE(font_lv_demo_ecg_roboto_slab_88);
-LV_FONT_DECLARE(font_lv_demo_ecg_roboto_slab_110);
-LV_FONT_DECLARE(font_lv_demo_ecg_roboto_slab_114);
-LV_FONT_DECLARE(font_lv_demo_ecg_roboto_slab_174);
-
-LV_ATTRIBUTE_EXTERN_DATA extern const lv_demo_ecg_sizes_t lv_demo_ecg_sizes[SIZE_COUNT];
+LV_ATTRIBUTE_EXTERN_DATA extern const int32_t lv_demo_ecg_sizes[DISP_SIZE_COUNT][SIZE_COUNT];
 
 /**********************
  * GLOBAL PROTOTYPES
