@@ -23,6 +23,8 @@ extern "C" {
 #include "../../src/widgets/line/lv_line.h"
 #include "../../src/libs/tiny_ttf/lv_tiny_ttf.h"
 #include "../../src/widgets/tileview/lv_tileview.h"
+#include "../../src/widgets/chart/lv_chart.h"
+#include "../../src/widgets/arc/lv_arc.h"
 
 /*********************
  *      DEFINES
@@ -76,9 +78,12 @@ enum {
 
     FONT_QUICKSAND_LIGHT_290,
     FONT_QUICKSAND_LIGHT_140,
+    FONT_QUICKSAND_LIGHT_120,
+    FONT_QUICKSAND_LIGHT_80,
     FONT_QUICKSAND_BOLD_27,
     FONT_QUICKSAND_MEDIUM_24,
     FONT_QUICKSAND_MEDIUM_22,
+    FONT_INTER_MEDIUM_20,
     FONT_INTER_MEDIUM_16,
     FONT_COUNT
 };
@@ -90,6 +95,7 @@ enum {
     STYLE_BUTTON_BORDER_SOFT,
     STYLE_CONTAINER_FILL_INVERT,
     STYLE_CONTAINER_BG_PRIMARY,
+    STYLE_ICON_FILL_INVERT,
     STYLE_COUNT
 };
 

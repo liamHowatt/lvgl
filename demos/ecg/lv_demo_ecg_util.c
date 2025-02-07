@@ -109,9 +109,12 @@ lv_obj_t * lv_demo_ecg_base_obj_create(void)
 
     c->fonts[FONT_QUICKSAND_LIGHT_290] = lv_tiny_ttf_create_file("Quicksand-Light.ttf", 290);
     c->fonts[FONT_QUICKSAND_LIGHT_140] = lv_tiny_ttf_create_file("Quicksand-Light.ttf", 140);
+    c->fonts[FONT_QUICKSAND_LIGHT_120] = lv_tiny_ttf_create_file("Quicksand-Light.ttf", 120);
+    c->fonts[FONT_QUICKSAND_LIGHT_80] = lv_tiny_ttf_create_file("Quicksand-Light.ttf", 80);
     c->fonts[FONT_QUICKSAND_BOLD_27] = lv_tiny_ttf_create_file("Quicksand-Bold.ttf", 27);
     c->fonts[FONT_QUICKSAND_MEDIUM_24] = lv_tiny_ttf_create_file("Quicksand-Medium.ttf", 24);
     c->fonts[FONT_QUICKSAND_MEDIUM_22] = lv_tiny_ttf_create_file("Quicksand-Medium.ttf", 22);
+    c->fonts[FONT_INTER_MEDIUM_20] = lv_tiny_ttf_create_file("Inter_18pt-Medium.ttf", 20);
     c->fonts[FONT_INTER_MEDIUM_16] = lv_tiny_ttf_create_file("Inter_18pt-Medium.ttf", 16);
 
     for(int32_t i = 0; i < FONT_COUNT; i++) {
@@ -181,6 +184,7 @@ static void theme_observer_cb(lv_observer_t * observer, lv_subject_t * subject)
             lv_style_set_border_color(&c->styles[STYLE_BUTTON_BORDER_SOFT], lv_color_hex(0xb8b8b8));
             lv_style_set_bg_color(&c->styles[STYLE_CONTAINER_FILL_INVERT], lv_color_hex(0x292929));
             lv_style_set_bg_color(&c->styles[STYLE_CONTAINER_BG_PRIMARY], lv_color_hex(0xf6f6f6));
+            lv_style_set_bg_color(&c->styles[STYLE_ICON_FILL_INVERT], lv_color_hex(0x808080));
             break;
         case THEME_DARK:
             lv_style_set_bg_color(&c->styles[STYLE_CONTAINER_BG_MAIN_FRAME], lv_color_hex(0x000000));
@@ -189,6 +193,7 @@ static void theme_observer_cb(lv_observer_t * observer, lv_subject_t * subject)
             lv_style_set_border_color(&c->styles[STYLE_BUTTON_BORDER_SOFT], lv_color_hex(0xd6d6d6));
             lv_style_set_bg_color(&c->styles[STYLE_CONTAINER_FILL_INVERT], lv_color_hex(0xf6f6f6));
             lv_style_set_bg_color(&c->styles[STYLE_CONTAINER_BG_PRIMARY], lv_color_hex(0x292929));
+            lv_style_set_bg_color(&c->styles[STYLE_ICON_FILL_INVERT], lv_color_hex(0xd1d1d1));
             break;
     }
 
