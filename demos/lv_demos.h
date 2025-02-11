@@ -69,6 +69,9 @@ extern "C" {
 
 #if LV_USE_DEMO_SMARTWATCH
 #include "smartwatch/lv_demo_smartwatch.h"
+
+#if LV_USE_DEMO_ECG
+#include "ecg/lv_demo_ecg.h"
 #endif
 
 /*********************
