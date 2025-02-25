@@ -25,6 +25,10 @@ extern "C" {
 #include "../../src/widgets/tileview/lv_tileview.h"
 #include "../../src/widgets/chart/lv_chart.h"
 #include "../../src/widgets/arc/lv_arc.h"
+#include "../../src/libs/ffmpeg/lv_ffmpeg.h"
+#include "../../src/widgets/keyboard/lv_keyboard.h"
+#include "../../src/widgets/textarea/lv_textarea.h"
+#include "../../src/widgets/dropdown/lv_dropdown.h"
 
 /*********************
  *      DEFINES
@@ -123,6 +127,8 @@ LV_IMAGE_DECLARE(img_lv_demo_ecg_monitor);
 LV_IMAGE_DECLARE(img_lv_demo_ecg_moon);
 LV_IMAGE_DECLARE(img_lv_demo_ecg_sun);
 LV_IMAGE_DECLARE(img_lv_demo_ecg_view);
+LV_IMAGE_DECLARE(img_lv_demo_ecg_x);
+LV_IMAGE_DECLARE(img_lv_demo_ecg_xray);
 
 LV_ATTRIBUTE_EXTERN_DATA extern const int32_t lv_demo_ecg_sizes[DISP_SIZE_COUNT][SIZE_COUNT];
 

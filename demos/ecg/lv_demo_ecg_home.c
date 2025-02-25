@@ -34,6 +34,12 @@ static void create_no_graph_grid_cell(lv_demo_ecg_ctx_t * c,
                                       const char * big_text, lv_font_t * big_font_override, const char * upper_small_text,
                                       const char * lower_small_text, lv_color_t lower_small_text_color);
 static void bottom_bar_create_line(lv_obj_t * bar);
+static void popup_x_clicked_cb(lv_event_t * e);
+static void create_lead(lv_demo_ecg_ctx_t * c, lv_obj_t * parent, lv_color_t symbol_color, const char * symbol_text, const char * main_text, const char * sub_text);
+static void leads_placement_popup(lv_event_t * e);
+static void show_patient_info(lv_event_t * e);
+static void textarea_clicked_cb(lv_event_t * e);
+static lv_obj_t * patient_info_input(lv_demo_ecg_ctx_t * c, lv_obj_t * grid, lv_obj_t * kb, int32_t col, int32_t row, const char * text, lv_obj_t * field_obj);
 
 /**********************
  *  STATIC VARIABLES
@@ -295,6 +301,7 @@ void lv_demo_ecg_home(lv_obj_t * base_obj)
     lv_label_set_text_static(label, "Electrodes");
     lv_obj_add_style(label, &c->styles[STYLE_LABEL], 0);
     lv_obj_set_style_text_font(label, c->fonts[FONT_INTER_MEDIUM_20], 0);
+    lv_obj_add_event_cb(electrodes_box, leads_placement_popup, LV_EVENT_CLICKED, base_obj);
 
     lv_obj_t * patient_info_box = lv_demo_ecg_simple_container_create(bottom_navbar, false, 8, LV_FLEX_ALIGN_CENTER);
     lv_obj_t * patient_info_image = lv_image_create(patient_info_box);
@@ -304,6 +311,7 @@ void lv_demo_ecg_home(lv_obj_t * base_obj)
     lv_label_set_text_static(label, "Patient Info.");
     lv_obj_add_style(label, &c->styles[STYLE_LABEL], 0);
     lv_obj_set_style_text_font(label, c->fonts[FONT_INTER_MEDIUM_20], 0);
+    lv_obj_add_event_cb(patient_info_box, show_patient_info, LV_EVENT_CLICKED, base_obj);
 
     lv_obj_t * view_box = lv_demo_ecg_simple_container_create(bottom_navbar, false, 8, LV_FLEX_ALIGN_CENTER);
     lv_obj_t * view_image = lv_image_create(view_box);
@@ -496,6 +504,207 @@ static void bottom_bar_create_line(lv_obj_t * bar)
     lv_line_set_points(divider, points, 2);
     lv_obj_set_style_line_width(divider, 2, 0);
     lv_obj_set_style_line_color(divider, lv_color_hex(0xb3b3b3), 0);
+}
+
+static void popup_x_clicked_cb(lv_event_t * e)
+{
+    lv_obj_t * base_obj = lv_event_get_user_data(e);
+    uint32_t child_count = lv_obj_get_child_count(base_obj);
+    for(uint32_t i = 0; i < child_count - 1; i++) {
+        lv_obj_delete(lv_obj_get_child(base_obj, -1));
+    }
+}
+
+static void create_lead(lv_demo_ecg_ctx_t * c, lv_obj_t * parent, lv_color_t symbol_color, const char * symbol_text, const char * main_text, const char * sub_text)
+{
+    lv_obj_t * box = lv_obj_create(parent);
+    lv_obj_remove_style_all(box);
+    lv_obj_set_size(box, 274, 80);
+    lv_obj_set_style_pad_all(box, 16, 0);
+    lv_obj_t * symbol = lv_obj_create(box);
+    lv_obj_remove_style_all(symbol);
+    lv_obj_set_size(symbol, 48, 48);
+    lv_obj_set_style_bg_opa(symbol, LV_OPA_COVER, 0);
+    lv_obj_set_style_bg_color(symbol, symbol_color, 0);
+    lv_obj_set_style_radius(symbol, LV_COORD_MAX, 0);
+    lv_obj_t * label = lv_label_create(symbol);
+    lv_label_set_text(label, symbol_text);
+    lv_obj_center(label);
+    label = lv_label_create(box);
+    lv_label_set_text(label, main_text);
+    lv_obj_align(label, LV_ALIGN_TOP_LEFT, 64, 0);
+    lv_obj_add_style(label, &c->styles[STYLE_LABEL], 0);
+    label = lv_label_create(box);
+    lv_label_set_text(label, sub_text);
+    lv_obj_align(label, LV_ALIGN_BOTTOM_LEFT, 64, 0);
+    lv_obj_add_style(label, &c->styles[STYLE_LABEL], 0);
+}
+
+static void leads_placement_popup(lv_event_t * e)
+{
+    lv_obj_t * base_obj = lv_event_get_user_data(e);
+    if(lv_obj_get_child_count(base_obj) > 1) return;
+    lv_demo_ecg_ctx_t * c = lv_obj_get_user_data(base_obj);
+
+    lv_obj_t * popup_bg = lv_obj_create(base_obj);
+    lv_obj_remove_style_all(popup_bg);
+    lv_obj_set_size(popup_bg, LV_PCT(100), LV_PCT(100));
+    lv_obj_set_style_bg_opa(popup_bg, LV_OPA_50, 0);
+    lv_obj_set_style_bg_color(popup_bg, lv_color_black(), 0);
+
+    lv_obj_t * popup = lv_obj_create(base_obj);
+    lv_obj_center(popup);
+    lv_obj_set_size(popup, 1203, 606);
+    lv_obj_set_style_pad_all(popup, 40, 0);
+    lv_obj_set_style_border_width(popup, 0, 0);
+    lv_obj_set_style_radius(popup, 24, 0);
+    lv_obj_add_style(popup, &c->styles[STYLE_CONTAINER_BG_PRIMARY], 0);
+
+    lv_obj_t * x_btn = lv_image_create(base_obj);
+    lv_image_set_src(x_btn, &img_lv_demo_ecg_x);
+    lv_obj_add_style(x_btn, &c->styles[STYLE_A8_IMG], 0);
+    lv_obj_add_style(x_btn, &c->styles[STYLE_CONTAINER_BG_PRIMARY], 0);
+    lv_image_set_inner_align(x_btn, LV_IMAGE_ALIGN_CENTER);
+    lv_obj_set_size(x_btn, 70, 70);
+    lv_obj_set_style_radius(x_btn, LV_COORD_MAX, 0);
+    lv_obj_set_style_bg_opa(x_btn, LV_OPA_COVER, 0);
+    lv_obj_align_to(x_btn, popup, LV_ALIGN_OUT_TOP_RIGHT, 35, 35);
+    lv_obj_add_flag(x_btn, LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_add_event_cb(x_btn, popup_x_clicked_cb, LV_EVENT_CLICKED, base_obj);
+
+    lv_obj_t * col = lv_demo_ecg_simple_container_create(popup, true, 0, LV_FLEX_ALIGN_CENTER);
+
+    lv_obj_t * title = lv_label_create(col);
+    lv_label_set_text_static(title, "12 Leads Placement");
+    lv_obj_add_style(title, &c->styles[STYLE_LABEL], 0);
+
+    lv_obj_t * xray = lv_image_create(col);
+    lv_image_set_src(xray, &img_lv_demo_ecg_xray);
+    lv_obj_set_style_pad_ver(xray, 24, 0);
+
+    create_lead(c, col, lv_color_hex(0xef4444), "V1", "Right sternal margin", "4th intercostal space");
+    create_lead(c, col, lv_color_hex(0xeab308), "V2", "Left sternal margin", "4th intercostal space");
+    create_lead(c, col, lv_color_hex(0x22c55e), "V3", "Between V2 and V4", "5th intercostal space");
+
+    lv_obj_t * video = lv_ffmpeg_player_create(popup);
+    lv_obj_set_align(video, LV_ALIGN_RIGHT_MID);
+    lv_obj_set_style_radius(video, 16, 0);
+    lv_ffmpeg_player_set_src(video, "/home/liam/Downloads/ecg_video.mp4");
+    lv_ffmpeg_player_set_auto_restart(video, true);
+    lv_ffmpeg_player_set_cmd(video, LV_FFMPEG_PLAYER_CMD_START);
+}
+
+static void textarea_clicked_cb(lv_event_t * e)
+{
+    lv_obj_t * ta = lv_event_get_target_obj(e);
+    lv_obj_t * kb = lv_event_get_user_data(e);
+    lv_keyboard_set_textarea(kb, ta);
+}
+
+static lv_obj_t * patient_info_input(lv_demo_ecg_ctx_t * c, lv_obj_t * grid, lv_obj_t * kb, int32_t col, int32_t row, const char * text, lv_obj_t * field_obj)
+{
+    lv_obj_t * label = lv_label_create(grid);
+    lv_label_set_text(label, text);
+    lv_obj_set_grid_cell(label, LV_GRID_ALIGN_START, col, 1, LV_GRID_ALIGN_START, row, 1);
+    lv_obj_add_style(label, &c->styles[STYLE_LABEL], 0);
+    if(field_obj == NULL) {
+        field_obj = lv_textarea_create(grid);
+        lv_obj_set_height(field_obj, LV_SIZE_CONTENT);
+        lv_obj_add_event_cb(field_obj, textarea_clicked_cb, LV_EVENT_CLICKED, kb);
+    }
+    lv_obj_set_style_pad_all(field_obj, 8, 0);
+    lv_obj_set_grid_cell(field_obj, LV_GRID_ALIGN_STRETCH, col, 1, LV_GRID_ALIGN_END, row, 1);
+    lv_obj_set_style_radius(field_obj, 6, 0);
+    return field_obj;
+}
+
+static void show_patient_info(lv_event_t * e)
+{
+    lv_obj_t * label;
+
+    lv_obj_t * base_obj = lv_event_get_user_data(e);
+    if(lv_obj_get_child_count(base_obj) > 1) return;
+    lv_demo_ecg_ctx_t * c = lv_obj_get_user_data(base_obj);
+
+    lv_obj_t * popup_bg = lv_obj_create(base_obj);
+    lv_obj_remove_style_all(popup_bg);
+    lv_obj_set_size(popup_bg, LV_PCT(100), LV_PCT(100));
+    lv_obj_set_style_bg_opa(popup_bg, LV_OPA_50, 0);
+    lv_obj_set_style_bg_color(popup_bg, lv_color_black(), 0);
+
+    lv_obj_t * kb = lv_keyboard_create(base_obj);
+    lv_obj_set_height(kb, 334);
+
+    lv_obj_t * popup = lv_obj_create(base_obj);
+    lv_obj_align(popup, LV_ALIGN_TOP_MID, 0, 49);
+    lv_obj_set_size(popup, 713, 403);
+    lv_obj_set_style_pad_hor(popup, 64, 0);
+    lv_obj_set_style_pad_ver(popup, 24, 0);
+    lv_obj_set_style_border_width(popup, 0, 0);
+    lv_obj_set_style_radius(popup, 8, 0);
+    lv_obj_add_style(popup, &c->styles[STYLE_CONTAINER_BG_PRIMARY], 0);
+
+    lv_obj_t * title = lv_label_create(popup);
+    lv_label_set_text_static(title, "Enter Patient Demographics");
+    lv_obj_set_style_text_align(title, LV_TEXT_ALIGN_CENTER, 0);
+    lv_obj_set_width(title, LV_PCT(100));
+    lv_obj_add_style(title, &c->styles[STYLE_LABEL], 0);
+
+    lv_obj_t * inner_1 = lv_demo_ecg_simple_container_create(popup, true, 24, LV_FLEX_ALIGN_END);
+    lv_obj_set_width(inner_1, LV_PCT(100));
+    lv_obj_set_align(inner_1, LV_ALIGN_BOTTOM_MID);
+
+    static const int32_t col_dsc[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
+    static const int32_t row_dsc[] = {67, 67, 67, LV_GRID_TEMPLATE_LAST};
+    lv_obj_t * grid = lv_obj_create(inner_1);
+    lv_obj_remove_style_all(grid);
+    lv_obj_set_style_grid_column_dsc_array(grid, col_dsc, 0);
+    lv_obj_set_style_grid_row_dsc_array(grid, row_dsc, 0);
+    lv_obj_set_style_pad_gap(grid, 20, 0);
+    lv_obj_set_size(grid, LV_PCT(100), LV_SIZE_CONTENT);
+    lv_obj_set_layout(grid, LV_LAYOUT_GRID);
+
+    patient_info_input(c, grid, kb, 0, 0, "Last Name *", NULL);
+    patient_info_input(c, grid, kb, 1, 0, "First Name", NULL);
+    patient_info_input(c, grid, kb, 0, 1, "MRN", NULL);
+    patient_info_input(c, grid, kb, 1, 1, "Visit Number", NULL);
+    lv_obj_t * dropdown = patient_info_input(c, grid, kb, 0, 2, "Gender", lv_dropdown_create(grid));
+    lv_dropdown_set_options_static(dropdown, "Select Gender\nMale\nFemale");
+    lv_obj_t * ta = patient_info_input(c, grid, kb, 1, 2, "Date of Birth", NULL);
+    lv_textarea_set_placeholder_text(ta, "Pick a date");
+
+    lv_obj_t * button_row = lv_demo_ecg_simple_container_create(inner_1, false, 16, LV_FLEX_ALIGN_CENTER);
+
+    lv_obj_t * cancel = lv_obj_create(button_row);
+    lv_obj_set_size(cancel, 79, 40);
+    lv_obj_remove_flag(cancel, LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_set_style_radius(cancel, 6, 0);
+    label = lv_label_create(cancel);
+    lv_obj_center(label);
+    lv_label_set_text_static(label, "Cancel");
+
+    lv_obj_t * save = lv_obj_create(button_row);
+    lv_obj_set_size(save, 64, 40);
+    lv_obj_remove_flag(save, LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_set_style_bg_color(save, lv_color_black(), 0);
+    lv_obj_set_style_border_width(save, 0, 0);
+    lv_obj_set_style_radius(save, 6, 0);
+    label = lv_label_create(save);
+    lv_obj_center(label);
+    lv_label_set_text_static(label, "Save");
+    lv_obj_set_style_text_color(label, lv_color_white(), 0);
+
+    lv_obj_t * x_btn = lv_image_create(base_obj);
+    lv_image_set_src(x_btn, &img_lv_demo_ecg_x);
+    lv_obj_add_style(x_btn, &c->styles[STYLE_A8_IMG], 0);
+    lv_obj_add_style(x_btn, &c->styles[STYLE_CONTAINER_BG_PRIMARY], 0);
+    lv_image_set_inner_align(x_btn, LV_IMAGE_ALIGN_CENTER);
+    lv_obj_set_size(x_btn, 70, 70);
+    lv_obj_set_style_radius(x_btn, LV_COORD_MAX, 0);
+    lv_obj_set_style_bg_opa(x_btn, LV_OPA_COVER, 0);
+    lv_obj_align_to(x_btn, popup, LV_ALIGN_OUT_TOP_RIGHT, 35, 35);
+    lv_obj_add_flag(x_btn, LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_add_event_cb(x_btn, popup_x_clicked_cb, LV_EVENT_CLICKED, base_obj);
 }
 
 #endif /*LV_USE_DEMO_ECG*/
