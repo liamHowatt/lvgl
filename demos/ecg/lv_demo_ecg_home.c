@@ -289,11 +289,16 @@ void lv_demo_ecg_home(lv_obj_t * base_obj)
     lv_obj_set_width(gear, 58);
     lv_obj_add_style(gear, &c->styles[STYLE_A8_IMG], 0);
 
-    lv_obj_t * bottom_navbar = lv_demo_ecg_simple_container_create(bottom_bar, false, 48, LV_FLEX_ALIGN_CENTER);
+    lv_obj_t * bottom_navbar = lv_demo_ecg_simple_container_create(bottom_bar, false, 24, LV_FLEX_ALIGN_CENTER);
     lv_obj_set_flex_align(bottom_navbar, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
     lv_obj_set_style_pad_hor(bottom_navbar, 72, 0);
 
-    lv_obj_t * electrodes_box = lv_demo_ecg_simple_container_create(bottom_navbar, false, 8, LV_FLEX_ALIGN_CENTER);
+    lv_obj_t * electrodes_box = lv_demo_ecg_simple_container_create(bottom_navbar, false, 4, LV_FLEX_ALIGN_CENTER);
+    lv_obj_set_style_pad_ver(electrodes_box, 17, 0);
+    lv_obj_set_style_pad_hor(electrodes_box, 24, 0);
+    lv_obj_set_style_radius(electrodes_box, 12, 0);
+    lv_obj_set_style_bg_opa(electrodes_box, LV_OPA_COVER, 0);
+    lv_obj_add_style(electrodes_box, &c->styles[STYLE_CONTAINER_BG_PRIMARY], 0);
     lv_obj_t * electrodes_image = lv_image_create(electrodes_box);
     lv_image_set_src(electrodes_image, &img_lv_demo_ecg_circuit);
     lv_obj_add_style(electrodes_image, &c->styles[STYLE_A8_IMG], 0);
@@ -303,7 +308,28 @@ void lv_demo_ecg_home(lv_obj_t * base_obj)
     lv_obj_set_style_text_font(label, c->fonts[FONT_INTER_MEDIUM_20], 0);
     lv_obj_add_event_cb(electrodes_box, leads_placement_popup, LV_EVENT_CLICKED, base_obj);
 
+    lv_obj_t * record_box = lv_demo_ecg_simple_container_create(bottom_navbar, false, 8, LV_FLEX_ALIGN_CENTER);
+    lv_obj_set_style_pad_ver(record_box, 17, 0);
+    lv_obj_set_style_pad_hor(record_box, 24, 0);
+    lv_obj_set_style_radius(record_box, 12, 0);
+    lv_obj_set_style_bg_opa(record_box, LV_OPA_COVER, 0);
+    lv_obj_set_style_bg_color(record_box, lv_color_hex(0x34c759), 0);
+    lv_obj_t * record_image = lv_image_create(record_box);
+    lv_image_set_src(record_image, &img_lv_demo_ecg_record);
+    lv_obj_set_style_image_recolor(record_image, lv_color_white(), 0);
+    lv_image_set_inner_align(record_image, LV_IMAGE_ALIGN_CENTER);
+    lv_obj_set_size(record_image, 24, 24);
+    label = lv_label_create(record_box);
+    lv_label_set_text_static(label, "Record");
+    lv_obj_set_style_text_color(label, lv_color_white(), 0);
+    lv_obj_set_style_text_font(label, c->fonts[FONT_INTER_MEDIUM_20], 0);
+
     lv_obj_t * patient_info_box = lv_demo_ecg_simple_container_create(bottom_navbar, false, 8, LV_FLEX_ALIGN_CENTER);
+    lv_obj_set_style_pad_ver(patient_info_box, 17, 0);
+    lv_obj_set_style_pad_hor(patient_info_box, 24, 0);
+    lv_obj_set_style_radius(patient_info_box, 12, 0);
+    lv_obj_set_style_bg_opa(patient_info_box, LV_OPA_COVER, 0);
+    lv_obj_add_style(patient_info_box, &c->styles[STYLE_CONTAINER_BG_PRIMARY], 0);
     lv_obj_t * patient_info_image = lv_image_create(patient_info_box);
     lv_image_set_src(patient_info_image, &img_lv_demo_ecg_figure_lg);
     lv_obj_add_style(patient_info_image, &c->styles[STYLE_A8_IMG], 0);
@@ -312,15 +338,6 @@ void lv_demo_ecg_home(lv_obj_t * base_obj)
     lv_obj_add_style(label, &c->styles[STYLE_LABEL], 0);
     lv_obj_set_style_text_font(label, c->fonts[FONT_INTER_MEDIUM_20], 0);
     lv_obj_add_event_cb(patient_info_box, show_patient_info, LV_EVENT_CLICKED, base_obj);
-
-    lv_obj_t * view_box = lv_demo_ecg_simple_container_create(bottom_navbar, false, 8, LV_FLEX_ALIGN_CENTER);
-    lv_obj_t * view_image = lv_image_create(view_box);
-    lv_image_set_src(view_image, &img_lv_demo_ecg_view);
-    lv_obj_add_style(view_image, &c->styles[STYLE_A8_IMG], 0);
-    label = lv_label_create(view_box);
-    lv_label_set_text_static(label, "View");
-    lv_obj_add_style(label, &c->styles[STYLE_LABEL], 0);
-    lv_obj_set_style_text_font(label, c->fonts[FONT_INTER_MEDIUM_20], 0);
 
     lv_obj_t * alarm_and_end_case_box = lv_demo_ecg_simple_container_create(bottom_bar, false, 64, LV_FLEX_ALIGN_CENTER);
     lv_obj_set_style_pad_hor(alarm_and_end_case_box, 24, 0);

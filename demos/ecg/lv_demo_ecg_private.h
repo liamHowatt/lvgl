@@ -125,8 +125,8 @@ LV_IMAGE_DECLARE(img_lv_demo_ecg_heart);
 LV_IMAGE_DECLARE(img_lv_demo_ecg_logo);
 LV_IMAGE_DECLARE(img_lv_demo_ecg_monitor);
 LV_IMAGE_DECLARE(img_lv_demo_ecg_moon);
+LV_IMAGE_DECLARE(img_lv_demo_ecg_record);
 LV_IMAGE_DECLARE(img_lv_demo_ecg_sun);
-LV_IMAGE_DECLARE(img_lv_demo_ecg_view);
 LV_IMAGE_DECLARE(img_lv_demo_ecg_x);
 LV_IMAGE_DECLARE(img_lv_demo_ecg_xray);
 
