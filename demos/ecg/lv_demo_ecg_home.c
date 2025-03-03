@@ -10,9 +10,16 @@
 #include "lv_demo_ecg_private.h"
 #if LV_USE_DEMO_ECG
 
+#include "lv_demo_ecg_data.h"
+
 /*********************
  *      DEFINES
  *********************/
+
+#define CHART_DATA_COEFFICIENT 50
+#define CHART_DATA_OFFSET 50
+#define CHART_DATA_GAP 20
+#define CHART_DATA_SKIP 5
 
 /**********************
  *      TYPEDEFS
@@ -24,7 +31,8 @@
 
 static void theme_button_click_cb(lv_event_t * e);
 static void theme_button_observer_cb(lv_observer_t * observer, lv_subject_t * subject);
-static void fill_chart_data(lv_obj_t * chart);
+static void chart_series_theme_observer_cb(lv_observer_t * observer, lv_subject_t * subject);
+static void fill_chart_data(lv_obj_t * chart, lv_color_t color, lv_demo_ecg_ctx_t * c);
 static lv_obj_t * create_labeled_big_number(lv_demo_ecg_ctx_t * c, lv_obj_t * parent, const char * big_text,
                                             lv_font_t * big_font, const char * upper_small_text,
                                             const char * lower_small_text, lv_color_t lower_small_text_color,
@@ -32,7 +40,7 @@ static lv_obj_t * create_labeled_big_number(lv_demo_ecg_ctx_t * c, lv_obj_t * pa
 static void create_no_graph_grid_cell(lv_demo_ecg_ctx_t * c,
                                       lv_obj_t * parent, int32_t col, int32_t row, lv_obj_t * icon_obj, const char * title_text,
                                       const char * big_text, lv_font_t * big_font_override, const char * upper_small_text,
-                                      const char * lower_small_text, lv_color_t lower_small_text_color);
+                                      const char * lower_small_text, lv_color_t lower_small_text_color, int32_t small_label_box_pad_bottom);
 static void bottom_bar_create_line(lv_obj_t * bar);
 static void popup_x_clicked_cb(lv_event_t * e);
 static void create_lead(lv_demo_ecg_ctx_t * c, lv_obj_t * parent, lv_color_t symbol_color, const char * symbol_text, const char * main_text, const char * sub_text);
@@ -40,6 +48,7 @@ static void leads_placement_popup(lv_event_t * e);
 static void show_patient_info(lv_event_t * e);
 static void textarea_clicked_cb(lv_event_t * e);
 static lv_obj_t * patient_info_input(lv_demo_ecg_ctx_t * c, lv_obj_t * grid, lv_obj_t * kb, int32_t col, int32_t row, const char * text, lv_obj_t * field_obj);
+static void segmentation_label_helper(lv_demo_ecg_ctx_t * c, lv_obj_t * parent, const char * const * texts);
 
 /**********************
  *  STATIC VARIABLES
@@ -188,11 +197,13 @@ void lv_demo_ecg_home(lv_obj_t * base_obj)
         for(int row = 0; row < 6; row++) {
             // lv_obj_t * obj = lv_obj_create(twelve_leads_grid);
             lv_obj_t * obj = lv_chart_create(twelve_leads_grid);
+            lv_obj_set_style_bg_opa(obj, LV_OPA_TRANSP, 0);
+            lv_chart_set_div_line_count(obj, 0, 0);
             lv_obj_set_style_border_width(obj, 0, 0);
             lv_obj_set_style_pad_all(obj, 0, 0);
             lv_obj_set_grid_cell(obj, LV_GRID_ALIGN_STRETCH, col, 1, LV_GRID_ALIGN_STRETCH, row, 1);
             lv_obj_set_style_size(obj, 0, 0, LV_PART_INDICATOR);
-            fill_chart_data(obj);
+            fill_chart_data(obj, lv_color_black(), c);
         }
     }
 
@@ -203,9 +214,22 @@ void lv_demo_ecg_home(lv_obj_t * base_obj)
     lv_obj_align(twelve_leads_lower_labaled_big_number, LV_ALIGN_TOP_RIGHT, -64, 180);
 
     lv_obj_t * twelve_leads_arc = lv_arc_create(twelve_leads);
-    lv_obj_align(twelve_leads_arc, LV_ALIGN_BOTTOM_RIGHT, -50, -50);
+    lv_obj_set_size(twelve_leads_arc, 200, 200);
+    lv_obj_align(twelve_leads_arc, LV_ALIGN_BOTTOM_RIGHT, -90, -20);
+    lv_arc_set_value(twelve_leads_arc, 0);
+    lv_obj_remove_flag(twelve_leads_arc, LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_set_style_arc_width(twelve_leads_arc, 12, 0);
+    lv_obj_set_style_arc_width(twelve_leads_arc, 12, LV_PART_INDICATOR);
     lv_obj_set_style_pad_all(twelve_leads_arc, 0, LV_PART_KNOB);
     lv_obj_add_style(twelve_leads_arc, &c->styles[STYLE_ICON_FILL_INVERT], LV_PART_KNOB);
+
+    lv_obj_t * arc_center_label = lv_label_create(twelve_leads_arc);
+    lv_label_set_text_static(arc_center_label, "00");
+    lv_obj_center(arc_center_label);
+    lv_obj_set_style_text_color(arc_center_label, lv_color_hex(0xe7e7e7), 0);
+    lv_obj_set_style_text_font(arc_center_label, c->fonts[SIZE_FONT_DISPLAY_STANDARD_M], 0);
+
+    /* four leads */
 
     lv_obj_t * four_leads_box = lv_tileview_add_tile(main_area, 1, 0, LV_DIR_ALL);
     lv_obj_set_style_pad_hor(four_leads_box, 24, 0);
@@ -229,27 +253,79 @@ void lv_demo_ecg_home(lv_obj_t * base_obj)
     lv_obj_set_style_pad_gap(four_leads_grid, 40, 0);
     lv_obj_set_layout(four_leads_grid, LV_LAYOUT_GRID);
 
+    lv_color_t colors[] = {
+        lv_color_hex(0x15803c),
+        lv_color_hex(0x0e8190),
+        lv_color_hex(0xc62008),
+        lv_color_hex(0xc2850c)
+    };
     for(int row = 0; row < 4; row++) {
         // lv_obj_t * obj = lv_obj_create(four_leads_grid);
         lv_obj_t * obj = lv_chart_create(four_leads_grid);
+        lv_chart_set_div_line_count(obj, 0, 0);
+        lv_obj_set_style_bg_opa(obj, LV_OPA_TRANSP, 0);
         lv_obj_set_style_border_width(obj, 0, 0);
         lv_obj_set_style_pad_all(obj, 0, 0);
         lv_obj_set_grid_cell(obj, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, row, 1);
         lv_obj_set_style_size(obj, 0, 0, LV_PART_INDICATOR);
-        fill_chart_data(obj);
+        fill_chart_data(obj, colors[row], c);
     }
 
+    /* left */
+
     lv_obj_t * four_leads_labeled_big_number_1 = create_labeled_big_number(c, four_leads, "120", c->fonts[FONT_QUICKSAND_LIGHT_120], "120-50", "BPM", lv_color_hex(0), 25);
-    lv_obj_align(four_leads_labeled_big_number_1, LV_ALIGN_TOP_RIGHT, -230, 32);
+    lv_obj_align(four_leads_labeled_big_number_1, LV_ALIGN_TOP_RIGHT, -230, 0);
 
     lv_obj_t * four_leads_labeled_big_number_2 = create_labeled_big_number(c, four_leads, "160", c->fonts[FONT_QUICKSAND_LIGHT_120], "120-50", "SpO2", lv_color_hex(0), 25);
-    lv_obj_align(four_leads_labeled_big_number_2, LV_ALIGN_TOP_RIGHT, -230, 150);
+    lv_obj_align(four_leads_labeled_big_number_2, LV_ALIGN_TOP_RIGHT, -230, 130);
 
     lv_obj_t * four_leads_labeled_big_number_3 = create_labeled_big_number(c, four_leads, "120/\n70", c->fonts[FONT_QUICKSAND_LIGHT_80], "120-50", "MAP:90", lv_color_hex(0), 15);
     lv_obj_align(four_leads_labeled_big_number_3, LV_ALIGN_TOP_RIGHT, -230, 280);
 
     lv_obj_t * four_leads_labeled_big_number_4 = create_labeled_big_number(c, four_leads, "60", c->fonts[FONT_QUICKSAND_LIGHT_120], "120-50", "RPM", lv_color_hex(0), 25);
     lv_obj_align(four_leads_labeled_big_number_4, LV_ALIGN_TOP_RIGHT, -230, 450);
+
+    /* right */
+
+    label = lv_label_create(four_leads);
+    lv_label_set_text_static(label, "Segmentation");
+    lv_obj_add_style(label, &c->styles[STYLE_LABEL], 0);
+    lv_obj_set_style_text_font(label, c->fonts[FONT_BODY_L], 0);
+    lv_obj_set_pos(label, 1025, 20);
+
+    lv_obj_t * segmentation_left = lv_demo_ecg_simple_container_create(four_leads, true, 8, LV_FLEX_ALIGN_START);
+    static const char * const segmentation_left_texts[] = {"ST - I", "ST - II", "ST - III", "ST - aVR", "ST - aVL"};
+    segmentation_label_helper(c, segmentation_left, segmentation_left_texts);
+    lv_obj_set_pos(segmentation_left, 1025, 60);
+
+    lv_obj_t * segmentation_right = lv_demo_ecg_simple_container_create(four_leads, true, 8, LV_FLEX_ALIGN_START);
+    static const char * const segmentation_right_texts[] = {"ST-V1", "ST-V2", "ST-V3", "ST-V4", "ST-V5"};
+    segmentation_label_helper(c, segmentation_right, segmentation_right_texts);
+    lv_obj_set_pos(segmentation_right, 1135, 60);
+
+    label = lv_label_create(four_leads);
+    lv_label_set_text_static(label, "Pulse");
+    lv_obj_add_style(label, &c->styles[STYLE_LABEL], 0);
+    lv_obj_set_style_text_font(label, c->fonts[FONT_BODY_L], 0);
+    lv_obj_set_pos(label, 1015, 210);
+    lv_obj_t * four_leads_labeled_big_number_5 = create_labeled_big_number(c, four_leads, "60", c->fonts[FONT_QUICKSAND_LIGHT_120], NULL, "BPM", lv_color_hex(0), 25);
+    lv_obj_align(four_leads_labeled_big_number_5, LV_ALIGN_TOP_RIGHT, -30, 0  + 200);
+
+    label = lv_label_create(four_leads);
+    lv_label_set_text_static(label, "Temp");
+    lv_obj_add_style(label, &c->styles[STYLE_LABEL], 0);
+    lv_obj_set_style_text_font(label, c->fonts[FONT_BODY_L], 0);
+    lv_obj_set_pos(label, 1015, 340);
+    lv_obj_t * four_leads_labeled_big_number_6 = create_labeled_big_number(c, four_leads, "38.1", c->fonts[FONT_QUICKSAND_LIGHT_120], NULL, NULL, lv_color_hex(0), 25);
+    lv_obj_align(four_leads_labeled_big_number_6, LV_ALIGN_TOP_RIGHT, -30, 130 + 200);
+
+    label = lv_label_create(four_leads);
+    lv_label_set_text_static(label, "SpMet");
+    lv_obj_add_style(label, &c->styles[STYLE_LABEL], 0);
+    lv_obj_set_style_text_font(label, c->fonts[FONT_BODY_L], 0);
+    lv_obj_set_pos(label, 1015, 470);
+    lv_obj_t * four_leads_labeled_big_number_7 = create_labeled_big_number(c, four_leads, "1.0", c->fonts[FONT_QUICKSAND_LIGHT_80], NULL, NULL, lv_color_hex(0), 15);
+    lv_obj_align(four_leads_labeled_big_number_7, LV_ALIGN_TOP_RIGHT, -120, 280 + 200);
 
     lv_obj_t * no_graph_grid = lv_tileview_add_tile(main_area, 2, 0, LV_DIR_ALL);
     lv_obj_set_style_pad_hor(no_graph_grid, 24, 0);
@@ -263,13 +339,13 @@ void lv_demo_ecg_home(lv_obj_t * base_obj)
     lv_obj_t * heart = lv_image_create(lv_screen_active());
     lv_image_set_src(heart, &img_lv_demo_ecg_heart);
     lv_obj_set_style_image_recolor(heart, lv_color_hex(0x00a53d), 0);
-    create_no_graph_grid_cell(c, no_graph_grid, 0, 0, heart, "HEART RATE",        "122", NULL,      "120-50", "BPM", lv_color_hex(0x00a53d));
+    create_no_graph_grid_cell(c, no_graph_grid, 0, 0, heart, "HEART RATE",        "122", NULL,      "120-50", "BPM", lv_color_hex(0x00a53d), 65);
     heart = lv_image_create(lv_screen_active());
     lv_image_set_src(heart, &img_lv_demo_ecg_heart);
     lv_obj_set_style_image_recolor(heart, lv_color_hex(0x00b3ca), 0);
-    create_no_graph_grid_cell(c, no_graph_grid, 1, 0, heart, "PLETH %",           "95", NULL,       "100-90", "SpO2", lv_color_hex(0x00b3ca));
-    create_no_graph_grid_cell(c, no_graph_grid, 0, 1, NULL, "ARTERIAL PRESSURE", "120/\n70", c->fonts[FONT_QUICKSAND_LIGHT_140], "100-90", "MAP: 90", lv_color_hex(0xe55213));
-    create_no_graph_grid_cell(c, no_graph_grid, 1, 1, NULL, "RESPIRATORY RATE",  "15", NULL,       "30-5", "RPM", lv_color_hex(0));
+    create_no_graph_grid_cell(c, no_graph_grid, 1, 0, heart, "PLETH %",           "95", NULL,       "100-90", "SpO2", lv_color_hex(0x00b3ca), 65);
+    create_no_graph_grid_cell(c, no_graph_grid, 0, 1, NULL, "ARTERIAL PRESSURE", "120/\n70", c->fonts[FONT_QUICKSAND_LIGHT_140], "100-90", "MAP: 90", lv_color_hex(0xe55213), 25);
+    create_no_graph_grid_cell(c, no_graph_grid, 1, 1, NULL, "RESPIRATORY RATE",  "15", NULL,       "30-5", "RPM", lv_color_hex(0), 65);
 
     lv_tileview_set_tile(main_area, four_leads_box, LV_ANIM_OFF);
 
@@ -279,9 +355,10 @@ void lv_demo_ecg_home(lv_obj_t * base_obj)
     lv_obj_remove_style_all(bottom_bar);
     lv_obj_set_size(bottom_bar, LV_PCT(100), 72);
     lv_obj_set_style_pad_hor(bottom_bar, 40, 0);
-    lv_obj_set_style_pad_bottom(bottom_bar, 30, 0);
+    // lv_obj_set_style_pad_bottom(bottom_bar, 30, 0);
     lv_obj_set_flex_flow(bottom_bar, LV_FLEX_FLOW_ROW);
     lv_obj_set_flex_align(bottom_bar, LV_FLEX_ALIGN_SPACE_BETWEEN, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+    lv_obj_remove_flag(bottom_bar, LV_OBJ_FLAG_SCROLLABLE);
 
     lv_obj_t * gear = lv_image_create(bottom_bar);
     lv_image_set_inner_align(gear, LV_IMAGE_ALIGN_CENTER);
@@ -350,6 +427,20 @@ void lv_demo_ecg_home(lv_obj_t * base_obj)
     lv_label_set_text_static(label, "Silence");
     lv_obj_set_style_text_color(label, lv_color_hex3(0x888), 0);
     lv_obj_set_style_text_font(label, c->fonts[FONT_INTER_MEDIUM_20], 0);
+
+    lv_obj_t * end_case = lv_obj_create(alarm_and_end_case_box);
+    lv_obj_set_size(end_case, 140, 58);
+    lv_obj_set_style_border_width(end_case, 0, 0);
+    lv_obj_set_style_radius(end_case, 8, 0);
+    lv_obj_add_style(end_case, &c->styles[STYLE_BG_DIRECT_INVERT], 0);
+    lv_obj_set_scrollbar_mode(end_case, LV_SCROLLBAR_MODE_OFF);
+    lv_obj_remove_flag(end_case, LV_OBJ_FLAG_SCROLLABLE);
+    label = lv_label_create(end_case);
+    lv_obj_center(label);
+    lv_label_set_text_static(label, "End Case");
+    lv_obj_add_style(label, &c->styles[STYLE_LABEL_INVERT], 0);
+    lv_obj_set_style_text_font(label, c->fonts[FONT_BODY_L], 0);
+    lv_obj_set_scrollbar_mode(label, LV_SCROLLBAR_MODE_OFF);
 
     // lv_obj_t * gear = lv_image_create(bottom_bar);
     // lv_image_set_src(gear, &img_lv_demo_ecg_gear);
@@ -436,16 +527,58 @@ static void theme_button_observer_cb(lv_observer_t * observer, lv_subject_t * su
     }
 }
 
-static void fill_chart_data(lv_obj_t * chart)
+static void chart_series_theme_observer_cb(lv_observer_t * observer, lv_subject_t * subject)
+{
+    lv_obj_t * chart = lv_observer_get_target_obj(observer);
+    lv_color_t color = lv_subject_get_int(subject) == THEME_LIGHT ? lv_color_black() : lv_color_white();
+    lv_chart_set_series_color(chart, lv_chart_get_series_next(chart, NULL), color);
+}
+
+static void chart_timer_cb(lv_timer_t * t)
+{
+    lv_obj_t * chart = lv_timer_get_user_data(t);
+    lv_chart_series_t * ser = lv_chart_get_series_next(chart, NULL);
+    uint32_t timer_i = (uintptr_t) lv_obj_get_user_data(chart);
+
+    uint32_t p = lv_chart_get_point_count(chart);
+
+    uint32_t chart_i = timer_i % p;
+
+    uint32_t data_i = timer_i * CHART_DATA_SKIP % (sizeof(lv_demo_ecg_data) / sizeof(float));
+    float val = lv_demo_ecg_data[data_i];
+    
+    lv_chart_set_value_by_id(chart, ser, chart_i, val * CHART_DATA_COEFFICIENT + CHART_DATA_OFFSET);
+    lv_chart_set_value_by_id(chart, ser, (chart_i + CHART_DATA_GAP) % p, LV_CHART_POINT_NONE);
+
+    timer_i += 1;
+    lv_obj_set_user_data(chart, (void *)(uintptr_t)timer_i);
+}
+
+static void chart_delete_cb(lv_event_t * e)
+{
+    lv_timer_t * t = lv_event_get_user_data(e);
+    lv_timer_delete(t);
+}
+
+static void fill_chart_data(lv_obj_t * chart, lv_color_t color, lv_demo_ecg_ctx_t * c)
 {
     lv_obj_update_layout(chart);
     int32_t w = lv_obj_get_width(chart);
     int32_t pt_count = w - 1;
     lv_chart_set_point_count(chart, pt_count);
-    lv_chart_series_t * ser1 = lv_chart_add_series(chart, lv_color_black(), LV_CHART_AXIS_PRIMARY_Y);
-    for(int32_t i = 0; i < pt_count; i++) {
-        lv_chart_set_next_value(chart, ser1, lv_trigo_sin(i * 2) * 100 / 70000 + 50);
+    lv_chart_series_t * ser1 = lv_chart_add_series(chart, color, LV_CHART_AXIS_PRIMARY_Y);
+    uint32_t data_i = lv_rand(0, sizeof(lv_demo_ecg_data) / sizeof(float) - 1);
+    for(int32_t i = CHART_DATA_GAP; i < pt_count; i++) {
+        float val = lv_demo_ecg_data[data_i];
+        data_i += CHART_DATA_SKIP;
+        if(data_i >= sizeof(lv_demo_ecg_data) / sizeof(float)) data_i -= sizeof(lv_demo_ecg_data) / sizeof(float);
+        lv_chart_set_next_value(chart, ser1, val * CHART_DATA_COEFFICIENT + CHART_DATA_OFFSET);
     }
+    if(!lv_color_to_int(color))
+        lv_subject_add_observer_obj(&c->th, chart_series_theme_observer_cb, chart, NULL);
+    lv_obj_set_user_data(chart, (void *)(uintptr_t)0);
+    lv_timer_t * t = lv_timer_create(chart_timer_cb, LV_DEF_REFR_PERIOD / 8, chart);
+    lv_obj_add_event_cb(chart, chart_delete_cb, LV_EVENT_DELETE, t);
 }
 
 static lv_obj_t * create_labeled_big_number(lv_demo_ecg_ctx_t * c, lv_obj_t * parent, const char * big_text,
@@ -460,24 +593,31 @@ static lv_obj_t * create_labeled_big_number(lv_demo_ecg_ctx_t * c, lv_obj_t * pa
     lv_obj_add_style(big_label, &c->styles[STYLE_LABEL], 0);
     lv_obj_set_style_text_font(big_label, big_font, 0);
     lv_obj_set_style_text_align(big_label, LV_TEXT_ALIGN_RIGHT, 0);
+    lv_obj_set_style_text_line_space(big_label, -lv_font_get_line_height(big_font) / 4, 0);
 
     lv_obj_t * small_label_box = lv_demo_ecg_simple_container_create(all_middle_labels, true, 4, LV_FLEX_ALIGN_START);
     lv_obj_set_style_pad_bottom(small_label_box, small_label_box_pad_bottom, 0);
 
-    lv_obj_t * label = lv_label_create(small_label_box);
-    lv_label_set_text_static(label, upper_small_text);
-    lv_obj_set_style_text_font(label, c->fonts[FONT_QUICKSAND_MEDIUM_24], 0);
-    lv_obj_add_style(label, &c->styles[STYLE_LABEL], 0);
-    lv_obj_set_style_text_opa(label, LV_OPA_50, 0);
+    lv_obj_t * label;
 
-    label = lv_label_create(small_label_box);
-    lv_label_set_text_static(label, lower_small_text);
-    lv_obj_set_style_text_font(label, c->fonts[FONT_QUICKSAND_BOLD_27], 0);
-    if(!lv_color_eq(lower_small_text_color, lv_color_hex(0))) {
-        lv_obj_set_style_text_color(label, lower_small_text_color, 0);
-    }
-    else {
+    if(upper_small_text) {
+        label = lv_label_create(small_label_box);
+        lv_label_set_text_static(label, upper_small_text);
+        lv_obj_set_style_text_font(label, c->fonts[FONT_QUICKSAND_MEDIUM_24], 0);
         lv_obj_add_style(label, &c->styles[STYLE_LABEL], 0);
+        lv_obj_set_style_text_opa(label, LV_OPA_50, 0);
+    }
+
+    if(lower_small_text) {
+        label = lv_label_create(small_label_box);
+        lv_label_set_text_static(label, lower_small_text);
+        lv_obj_set_style_text_font(label, c->fonts[FONT_QUICKSAND_BOLD_27], 0);
+        if(!lv_color_eq(lower_small_text_color, lv_color_hex(0))) {
+            lv_obj_set_style_text_color(label, lower_small_text_color, 0);
+        }
+        else {
+            lv_obj_add_style(label, &c->styles[STYLE_LABEL], 0);
+        }
     }
 
     return all_middle_labels;
@@ -486,7 +626,7 @@ static lv_obj_t * create_labeled_big_number(lv_demo_ecg_ctx_t * c, lv_obj_t * pa
 static void create_no_graph_grid_cell(lv_demo_ecg_ctx_t * c,
                                       lv_obj_t * parent, int32_t col, int32_t row, lv_obj_t * icon_obj, const char * title_text,
                                       const char * big_text, lv_font_t * big_font_override, const char * upper_small_text,
-                                      const char * lower_small_text, lv_color_t lower_small_text_color)
+                                      const char * lower_small_text, lv_color_t lower_small_text_color, int32_t small_label_box_pad_bottom)
 {
     lv_obj_t * cell = lv_obj_create(parent);
     lv_obj_set_grid_cell(cell, LV_GRID_ALIGN_STRETCH, col, 1, LV_GRID_ALIGN_STRETCH, row, 1);
@@ -507,9 +647,9 @@ static void create_no_graph_grid_cell(lv_demo_ecg_ctx_t * c,
 
     lv_obj_t * all_middle_labels = create_labeled_big_number(c, cell, big_text,
                                                              big_font_override ? big_font_override : c->fonts[FONT_QUICKSAND_LIGHT_290],
-                                                             upper_small_text, lower_small_text, lower_small_text_color, 65);
+                                                             upper_small_text, lower_small_text, lower_small_text_color, small_label_box_pad_bottom);
 
-    lv_obj_align(all_middle_labels, LV_ALIGN_BOTTOM_RIGHT, -50, 50);
+    lv_obj_align(all_middle_labels, LV_ALIGN_BOTTOM_RIGHT, -50, 30);
 }
 
 static void bottom_bar_create_line(lv_obj_t * bar)
@@ -606,7 +746,7 @@ static void leads_placement_popup(lv_event_t * e)
     lv_obj_t * video = lv_ffmpeg_player_create(popup);
     lv_obj_set_align(video, LV_ALIGN_RIGHT_MID);
     lv_obj_set_style_radius(video, 16, 0);
-    lv_ffmpeg_player_set_src(video, "/home/liam/Downloads/ecg_video.mp4");
+    lv_ffmpeg_player_set_src(video, "ecg_video.mp4");
     lv_ffmpeg_player_set_auto_restart(video, true);
     lv_ffmpeg_player_set_cmd(video, LV_FFMPEG_PLAYER_CMD_START);
 }
@@ -699,6 +839,7 @@ static void show_patient_info(lv_event_t * e)
     label = lv_label_create(cancel);
     lv_obj_center(label);
     lv_label_set_text_static(label, "Cancel");
+    lv_obj_add_event_cb(cancel, popup_x_clicked_cb, LV_EVENT_CLICKED, base_obj);
 
     lv_obj_t * save = lv_obj_create(button_row);
     lv_obj_set_size(save, 64, 40);
@@ -710,6 +851,7 @@ static void show_patient_info(lv_event_t * e)
     lv_obj_center(label);
     lv_label_set_text_static(label, "Save");
     lv_obj_set_style_text_color(label, lv_color_white(), 0);
+    lv_obj_add_event_cb(save, popup_x_clicked_cb, LV_EVENT_CLICKED, base_obj);
 
     lv_obj_t * x_btn = lv_image_create(base_obj);
     lv_image_set_src(x_btn, &img_lv_demo_ecg_x);
@@ -722,6 +864,16 @@ static void show_patient_info(lv_event_t * e)
     lv_obj_align_to(x_btn, popup, LV_ALIGN_OUT_TOP_RIGHT, 35, 35);
     lv_obj_add_flag(x_btn, LV_OBJ_FLAG_CLICKABLE);
     lv_obj_add_event_cb(x_btn, popup_x_clicked_cb, LV_EVENT_CLICKED, base_obj);
+}
+
+static void segmentation_label_helper(lv_demo_ecg_ctx_t * c, lv_obj_t * parent, const char * const * texts)
+{
+    for(int32_t i = 0; i < 5; i++) {
+        lv_obj_t * label = lv_label_create(parent);
+        lv_label_set_text_static(label, texts[i]);
+        lv_obj_add_style(label, &c->styles[STYLE_LABEL], 0);
+        lv_obj_set_style_text_font(label, c->fonts[SIZE_FONT_LABEL_STANDARD], 0);
+    }
 }
 
 #endif /*LV_USE_DEMO_ECG*/

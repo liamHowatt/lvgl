@@ -185,6 +185,9 @@ static void theme_observer_cb(lv_observer_t * observer, lv_subject_t * subject)
             lv_style_set_bg_color(&c->styles[STYLE_CONTAINER_FILL_INVERT], lv_color_hex(0x292929));
             lv_style_set_bg_color(&c->styles[STYLE_CONTAINER_BG_PRIMARY], lv_color_hex(0xf6f6f6));
             lv_style_set_bg_color(&c->styles[STYLE_ICON_FILL_INVERT], lv_color_hex(0x808080));
+            lv_style_set_bg_color(&c->styles[STYLE_BG_DIRECT], lv_color_hex(0xffffff));
+            lv_style_set_bg_color(&c->styles[STYLE_BG_DIRECT_INVERT], lv_color_hex(0x000000));
+            lv_style_set_text_color(&c->styles[STYLE_LABEL_INVERT], lv_color_hex(0xffffff));
             break;
         case THEME_DARK:
             lv_style_set_bg_color(&c->styles[STYLE_CONTAINER_BG_MAIN_FRAME], lv_color_hex(0x000000));
@@ -194,6 +197,9 @@ static void theme_observer_cb(lv_observer_t * observer, lv_subject_t * subject)
             lv_style_set_bg_color(&c->styles[STYLE_CONTAINER_FILL_INVERT], lv_color_hex(0xf6f6f6));
             lv_style_set_bg_color(&c->styles[STYLE_CONTAINER_BG_PRIMARY], lv_color_hex(0x292929));
             lv_style_set_bg_color(&c->styles[STYLE_ICON_FILL_INVERT], lv_color_hex(0xd1d1d1));
+            lv_style_set_bg_color(&c->styles[STYLE_BG_DIRECT], lv_color_hex(0x000000));
+            lv_style_set_bg_color(&c->styles[STYLE_BG_DIRECT_INVERT], lv_color_hex(0xffffff));
+            lv_style_set_text_color(&c->styles[STYLE_LABEL_INVERT], lv_color_hex(0x000000));
             break;
     }
 
