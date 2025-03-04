@@ -547,8 +547,8 @@ static void chart_timer_cb(lv_timer_t * t)
     uint32_t data_i = timer_i * CHART_DATA_SKIP % (sizeof(lv_demo_ecg_data) / sizeof(float));
     float val = lv_demo_ecg_data[data_i];
     
-    lv_chart_set_value_by_id(chart, ser, chart_i, val * CHART_DATA_COEFFICIENT + CHART_DATA_OFFSET);
-    lv_chart_set_value_by_id(chart, ser, (chart_i + CHART_DATA_GAP) % p, LV_CHART_POINT_NONE);
+    lv_chart_set_series_value_by_id(chart, ser, chart_i, val * CHART_DATA_COEFFICIENT + CHART_DATA_OFFSET);
+    lv_chart_set_series_value_by_id(chart, ser, (chart_i + CHART_DATA_GAP) % p, LV_CHART_POINT_NONE);
 
     timer_i += 1;
     lv_obj_set_user_data(chart, (void *)(uintptr_t)timer_i);
