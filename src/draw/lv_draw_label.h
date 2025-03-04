@@ -60,6 +60,11 @@ typedef struct {
      * Indicate that the text is constant and its pointer can be safely saved e.g. in a cache.
      */
     uint8_t text_static : 1;
+
+    /**
+     * 1: already executed lv_bidi_process_paragraph.
+     * 0: has not been executed lv_bidi_process_paragraph.*/
+    uint8_t has_bided : 1;
     lv_draw_label_hint_t * hint;
 } lv_draw_label_dsc_t;
 
@@ -85,7 +90,7 @@ typedef struct {
 /**
  * Passed as a parameter to `lv_draw_label_iterate_characters` to
  * draw the characters one by one
- * @param draw_unit     pointer to a draw unit
+ * @param t             pointer to a draw task
  * @param dsc           pointer to `lv_draw_glyph_dsc_t` to describe the character to draw
  *                      if NULL don't draw character
  * @param fill_dsc      pointer to a fill descriptor to draw a background for the character or
@@ -94,7 +99,7 @@ typedef struct {
  * @param fill_area     the area to fill
  *                      if NULL do not fill anything
  */
-typedef void(*lv_draw_glyph_cb_t)(lv_draw_unit_t * draw_unit, lv_draw_glyph_dsc_t * dsc, lv_draw_fill_dsc_t * fill_dsc,
+typedef void(*lv_draw_glyph_cb_t)(lv_draw_task_t * t, lv_draw_glyph_dsc_t * dsc, lv_draw_fill_dsc_t * fill_dsc,
                                   const lv_area_t * fill_area);
 
 /**********************
@@ -154,12 +159,12 @@ void /* LV_ATTRIBUTE_FAST_MEM */ lv_draw_letter(lv_layer_t * layer, lv_draw_lett
 /**
  * Should be used during rendering the characters to get the position and other
  * parameters of the characters
- * @param draw_unit     pointer to a draw unit
+ * @param t             pointer to a draw task
  * @param dsc           pointer to draw descriptor
  * @param coords        coordinates of the label
  * @param cb            a callback to call to draw each glyphs one by one
  */
-void lv_draw_label_iterate_characters(lv_draw_unit_t * draw_unit, const lv_draw_label_dsc_t * dsc,
+void lv_draw_label_iterate_characters(lv_draw_task_t * t, const lv_draw_label_dsc_t * dsc,
                                       const lv_area_t * coords, lv_draw_glyph_cb_t cb);
 
 /**
@@ -171,14 +176,14 @@ void lv_draw_label_iterate_characters(lv_draw_unit_t * draw_unit, const lv_draw_
  * and invokes the callback (`cb`) to render the glyph at the specified position (`pos`)
  * using the given font (`font`).
  *
- * @param draw_unit     Pointer to the drawing unit handling the rendering context.
+ * @param t             Pointer to the drawing task.
  * @param dsc           Pointer to the descriptor containing styling for the glyph to be drawn.
  * @param pos           Pointer to the point coordinates where the letter should be drawn.
  * @param font          Pointer to the font containing the glyph.
  * @param letter        The Unicode code point of the letter to be drawn.
  * @param cb            Callback function to execute the actual rendering of the glyph.
  */
-void lv_draw_unit_draw_letter(lv_draw_unit_t * draw_unit, lv_draw_glyph_dsc_t * dsc,  const lv_point_t * pos,
+void lv_draw_unit_draw_letter(lv_draw_task_t * t, lv_draw_glyph_dsc_t * dsc,  const lv_point_t * pos,
                               const lv_font_t * font, uint32_t letter, lv_draw_glyph_cb_t cb);
 
 /***********************

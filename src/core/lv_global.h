@@ -35,6 +35,10 @@ extern "C" {
 #include "../font/lv_font_fmt_txt_private.h"
 #endif
 
+#if LV_USE_OS != LV_OS_NONE && defined(__linux__)
+#include "../osal/lv_linux_private.h"
+#endif
+
 #include "../tick/lv_tick.h"
 #include "../layouts/lv_layout.h"
 
@@ -122,6 +126,7 @@ typedef struct _lv_global_t {
     lv_cache_t * img_header_cache;
 
     lv_draw_global_info_t draw_info;
+    lv_ll_t draw_sw_blend_handler_ll;
 #if defined(LV_DRAW_SW_SHADOW_CACHE_SIZE) && LV_DRAW_SW_SHADOW_CACHE_SIZE > 0
     lv_draw_sw_shadow_cache_t sw_shadow_cache;
 #endif
@@ -224,6 +229,9 @@ typedef struct _lv_global_t {
 
 #if LV_USE_OS != LV_OS_NONE
     lv_mutex_t lv_general_mutex;
+#if defined(__linux__)
+    lv_proc_stat_t linux_last_proc_stat;
+#endif
 #endif
 
 #if LV_USE_OS == LV_OS_FREERTOS
@@ -233,6 +241,9 @@ typedef struct _lv_global_t {
     bool freertos_idle_task_running;
 #endif
 
+#if LV_USE_EVDEV
+    lv_evdev_discovery_t * evdev_discovery;
+#endif
 
     void * user_data;
 } lv_global_t;

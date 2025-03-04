@@ -39,16 +39,16 @@
 /**********************
  *   GLOBAL FUNCTIONS
  **********************/
-void lv_draw_nema_gfx_triangle(lv_draw_unit_t * draw_unit, const lv_draw_triangle_dsc_t * dsc)
+void lv_draw_nema_gfx_triangle(lv_draw_task_t * t, const lv_draw_triangle_dsc_t * dsc)
 {
     if(dsc->bg_opa <= LV_OPA_MIN) return;
 
-    lv_draw_nema_gfx_unit_t * draw_nema_gfx_unit = (lv_draw_nema_gfx_unit_t *)draw_unit;
+    lv_draw_nema_gfx_unit_t * draw_nema_gfx_unit = (lv_draw_nema_gfx_unit_t *)t->draw_unit;
 
-    lv_layer_t * layer = draw_unit->target_layer;
+    lv_layer_t * layer = t->target_layer;
 
     lv_area_t rel_clip_area;
-    lv_area_copy(&rel_clip_area, draw_unit->clip_area);
+    lv_area_copy(&rel_clip_area, &t->clip_area);
     lv_area_move(&rel_clip_area, -layer->buf_area.x1, -layer->buf_area.y1);
 
     lv_area_t coords;
@@ -69,9 +69,12 @@ void lv_draw_nema_gfx_triangle(lv_draw_unit_t * draw_unit, const lv_draw_triangl
     lv_color_format_t dst_cf = layer->draw_buf->header.cf;
     uint32_t dst_nema_cf = lv_nemagfx_cf_to_nema(dst_cf);
 
+    /* the stride should be computed internally for NEMA_TSC images and images missing a stride value */
+    int32_t stride = (dst_cf >= LV_COLOR_FORMAT_NEMA_TSC_START && dst_cf <= LV_COLOR_FORMAT_NEMA_TSC_END) ?
+                     -1 : lv_area_get_width(&(layer->buf_area)) * lv_color_format_get_size(dst_cf);
+
     nema_bind_dst_tex((uintptr_t)NEMA_VIRT2PHYS(layer->draw_buf->data), lv_area_get_width(&(layer->buf_area)),
-                      lv_area_get_height(&(layer->buf_area)), dst_nema_cf,
-                      lv_area_get_width(&(layer->buf_area))*lv_color_format_get_size(dst_cf));
+                      lv_area_get_height(&(layer->buf_area)), dst_nema_cf, stride);
 
     if(dsc->bg_grad.dir == (lv_grad_dir_t)LV_GRAD_DIR_NONE) {
 
