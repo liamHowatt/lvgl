@@ -210,7 +210,7 @@ void lv_demo_ecg_home(lv_obj_t * base_obj)
     lv_obj_t * twelve_leads_upper_labaled_big_number = create_labeled_big_number(c, twelve_leads, "60", c->fonts[FONT_QUICKSAND_LIGHT_120], "120-50", "BPM", lv_color_hex(0x15803c), 25);
     lv_obj_align(twelve_leads_upper_labaled_big_number, LV_ALIGN_TOP_RIGHT, -64, 32);
 
-    lv_obj_t * twelve_leads_lower_labaled_big_number = create_labeled_big_number(c, twelve_leads, "120/\n70", c->fonts[FONT_QUICKSAND_LIGHT_80], "120-50", "MAP: 90", lv_color_hex(0), 15);
+    lv_obj_t * twelve_leads_lower_labaled_big_number = create_labeled_big_number(c, twelve_leads, "120\n70", c->fonts[FONT_QUICKSAND_LIGHT_80], "120-50", "MAP: 90", lv_color_hex(0), 15);
     lv_obj_align(twelve_leads_lower_labaled_big_number, LV_ALIGN_TOP_RIGHT, -64, 180);
 
     lv_obj_t * twelve_leads_arc = lv_arc_create(twelve_leads);
@@ -279,7 +279,7 @@ void lv_demo_ecg_home(lv_obj_t * base_obj)
     lv_obj_t * four_leads_labeled_big_number_2 = create_labeled_big_number(c, four_leads, "160", c->fonts[FONT_QUICKSAND_LIGHT_120], "120-50", "SpO2", lv_color_hex(0), 25);
     lv_obj_align(four_leads_labeled_big_number_2, LV_ALIGN_TOP_RIGHT, -230, 130);
 
-    lv_obj_t * four_leads_labeled_big_number_3 = create_labeled_big_number(c, four_leads, "120/\n70", c->fonts[FONT_QUICKSAND_LIGHT_80], "120-50", "MAP:90", lv_color_hex(0), 15);
+    lv_obj_t * four_leads_labeled_big_number_3 = create_labeled_big_number(c, four_leads, "120\n70", c->fonts[FONT_QUICKSAND_LIGHT_80], "120-50", "MAP:90", lv_color_hex(0), 15);
     lv_obj_align(four_leads_labeled_big_number_3, LV_ALIGN_TOP_RIGHT, -230, 280);
 
     lv_obj_t * four_leads_labeled_big_number_4 = create_labeled_big_number(c, four_leads, "60", c->fonts[FONT_QUICKSAND_LIGHT_120], "120-50", "RPM", lv_color_hex(0), 25);
@@ -344,7 +344,7 @@ void lv_demo_ecg_home(lv_obj_t * base_obj)
     lv_image_set_src(heart, &img_lv_demo_ecg_heart);
     lv_obj_set_style_image_recolor(heart, lv_color_hex(0x00b3ca), 0);
     create_no_graph_grid_cell(c, no_graph_grid, 1, 0, heart, "PLETH %",           "95", NULL,       "100-90", "SpO2", lv_color_hex(0x00b3ca), 65);
-    create_no_graph_grid_cell(c, no_graph_grid, 0, 1, NULL, "ARTERIAL PRESSURE", "120/\n70", c->fonts[FONT_QUICKSAND_LIGHT_140], "100-90", "MAP: 90", lv_color_hex(0xe55213), 25);
+    create_no_graph_grid_cell(c, no_graph_grid, 0, 1, NULL, "ARTERIAL PRESSURE", "120\n70", c->fonts[FONT_QUICKSAND_LIGHT_140], "100-90", "MAP: 90", lv_color_hex(0xe55213), 25);
     create_no_graph_grid_cell(c, no_graph_grid, 1, 1, NULL, "RESPIRATORY RATE",  "15", NULL,       "30-5", "RPM", lv_color_hex(0), 65);
 
     lv_tileview_set_tile(main_area, four_leads_box, LV_ANIM_OFF);
