@@ -385,21 +385,21 @@ void lv_demo_ecg_home(lv_obj_t * base_obj)
     lv_obj_set_style_text_font(label, c->fonts[FONT_INTER_MEDIUM_20], 0);
     lv_obj_add_event_cb(electrodes_box, leads_placement_popup, LV_EVENT_CLICKED, base_obj);
 
-    lv_obj_t * record_box = lv_demo_ecg_simple_container_create(bottom_navbar, false, 8, LV_FLEX_ALIGN_CENTER);
-    lv_obj_set_style_pad_ver(record_box, 17, 0);
-    lv_obj_set_style_pad_hor(record_box, 24, 0);
-    lv_obj_set_style_radius(record_box, 12, 0);
-    lv_obj_set_style_bg_opa(record_box, LV_OPA_COVER, 0);
-    lv_obj_set_style_bg_color(record_box, lv_color_hex(0x34c759), 0);
-    lv_obj_t * record_image = lv_image_create(record_box);
-    lv_image_set_src(record_image, &img_lv_demo_ecg_record);
-    lv_obj_set_style_image_recolor(record_image, lv_color_white(), 0);
-    lv_image_set_inner_align(record_image, LV_IMAGE_ALIGN_CENTER);
-    lv_obj_set_size(record_image, 24, 24);
-    label = lv_label_create(record_box);
-    lv_label_set_text_static(label, "Record");
-    lv_obj_set_style_text_color(label, lv_color_white(), 0);
-    lv_obj_set_style_text_font(label, c->fonts[FONT_INTER_MEDIUM_20], 0);
+    // lv_obj_t * record_box = lv_demo_ecg_simple_container_create(bottom_navbar, false, 8, LV_FLEX_ALIGN_CENTER);
+    // lv_obj_set_style_pad_ver(record_box, 17, 0);
+    // lv_obj_set_style_pad_hor(record_box, 24, 0);
+    // lv_obj_set_style_radius(record_box, 12, 0);
+    // lv_obj_set_style_bg_opa(record_box, LV_OPA_COVER, 0);
+    // lv_obj_set_style_bg_color(record_box, lv_color_hex(0x34c759), 0);
+    // lv_obj_t * record_image = lv_image_create(record_box);
+    // lv_image_set_src(record_image, &img_lv_demo_ecg_record);
+    // lv_obj_set_style_image_recolor(record_image, lv_color_white(), 0);
+    // lv_image_set_inner_align(record_image, LV_IMAGE_ALIGN_CENTER);
+    // lv_obj_set_size(record_image, 24, 24);
+    // label = lv_label_create(record_box);
+    // lv_label_set_text_static(label, "Record");
+    // lv_obj_set_style_text_color(label, lv_color_white(), 0);
+    // lv_obj_set_style_text_font(label, c->fonts[FONT_INTER_MEDIUM_20], 0);
 
     lv_obj_t * patient_info_box = lv_demo_ecg_simple_container_create(bottom_navbar, false, 8, LV_FLEX_ALIGN_CENTER);
     lv_obj_set_style_pad_ver(patient_info_box, 17, 0);
