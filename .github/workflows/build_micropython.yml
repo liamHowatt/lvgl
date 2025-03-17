@@ -2,7 +2,7 @@ name: MicroPython CI
 
 on:
   push:
-  pull_request:
+  # pull_request:
 
 # https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions#concurrency
 # Ensure that only one commit will be running tests at a time on each PR
@@ -34,13 +34,13 @@ jobs:
       run: |
         git clone https://github.com/lvgl/lv_micropython.git .
         git checkout master
-    - name: Initialize lv_bindings submodule
-      run: git submodule update --init --recursive lib/lv_bindings
+    - name: Initialize lv_binding_micropython submodule
+      run: git submodule update --init --recursive lib/lv_binding_micropython
     - name: Update ${{ matrix.port }} port submodules
       if:  matrix.port != 'rp2'
-      run: make -C ports/${{ matrix.port }} DEBUG=1 USER_C_MODULES=../../lib/lv_bindings/bindings.cmake submodules
+      run: make -C ports/${{ matrix.port }} DEBUG=1 USER_C_MODULES=../../lib/lv_binding_micropython/bindings.cmake submodules
     - name: Checkout LVGL submodule
-      working-directory: ./lib/lv_bindings/lvgl
+      working-directory: ./lib/lv_binding_micropython/lvgl
       run: |
         git fetch --force ${{ github.event.repository.html_url }} "+refs/heads/*:refs/remotes/origin/*"
         git fetch --force ${{ github.event.repository.html_url }} "+refs/pull/*:refs/remotes/origin/pr/*"
@@ -62,7 +62,7 @@ jobs:
       if: matrix.port == 'rp2'
       run: |
         make -C ports/rp2 BOARD=PICO submodules
-        make -j $(nproc) -C ports/rp2 BOARD=PICO USER_C_MODULES=../../lib/lv_bindings/bindings.cmake
+        make -j $(nproc) -C ports/rp2 BOARD=PICO USER_C_MODULES=../../lib/lv_binding_micropython/bindings.cmake
     # Unix port
     - name: Build Unix port
       if: matrix.port == 'unix'
@@ -70,18 +70,18 @@ jobs:
     - name: Install requirements for the test
       run: |
         python3 -m pip install pillow
-        mkdir lib/lv_bindings/lvgl/tests/micropy_test/artifacts
+        mkdir lib/lv_binding_micropython/lvgl/tests/micropy_test/artifacts
     - name: Run tests
       if: success() && matrix.port == 'unix'
       run: |
         export XDG_RUNTIME_DIR=/tmp
-        python3 lib/lv_bindings/lvgl/tests/micropy_test/__init__.py --artifact-path=lib/lv_bindings/lvgl/tests/micropy_test/artifacts --mpy-path=ports/unix/build-standard/micropython
+        python3 lib/lv_binding_micropython/lvgl/tests/micropy_test/__init__.py --artifact-path=lib/lv_binding_micropython/lvgl/tests/micropy_test/artifacts --mpy-path=ports/unix/build-standard/micropython
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: test-artifacts
-        path: lib/lv_bindings/lvgl/tests/micropy_test/artifacts
+        path: lib/lv_binding_micropython/lvgl/tests/micropy_test/artifacts
 
   build-esp32:
     runs-on: ubuntu-22.04
@@ -99,12 +99,12 @@ jobs:
       run: |
         git clone https://github.com/lvgl/lv_micropython.git .
         git checkout master
-    - name: Initialize lv_bindings submodule
-      run: git submodule update --init --recursive lib/lv_bindings
+    - name: Initialize lv_binding_micropython submodule
+      run: git submodule update --init --recursive lib/lv_binding_micropython
     - name: Update ${{ matrix.port }} port submodules
-      run: make -C ports/esp32 DEBUG=1 USER_C_MODULES=../../lib/lv_bindings/bindings.cmake submodules
+      run: make -C ports/esp32 DEBUG=1 USER_C_MODULES=../../lib/lv_binding_micropython/bindings.cmake submodules
     - name: Checkout LVGL submodule
-      working-directory: ./lib/lv_bindings/lvgl
+      working-directory: ./lib/lv_binding_micropython/lvgl
       run: |
         git fetch --force ${{ github.event.repository.html_url }} "+refs/heads/*:refs/remotes/origin/*"
         git fetch --force ${{ github.event.repository.html_url }} "+refs/pull/*:refs/remotes/origin/pr/*"
@@ -121,9 +121,9 @@ jobs:
     - name: Install requirements for the test
       run: |
         python3 -m pip install pillow
-        mkdir lib/lv_bindings/lvgl/tests/micropy_test/artifacts
+        mkdir lib/lv_binding_micropython/lvgl/tests/micropy_test/artifacts
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: test-artifacts
-        path: lib/lv_bindings/lvgl/tests/micropy_test/artifacts
+        path: lib/lv_binding_micropython/lvgl/tests/micropy_test/artifacts
