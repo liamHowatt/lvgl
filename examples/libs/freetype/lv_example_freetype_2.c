@@ -5,8 +5,13 @@
 #if LV_FREETYPE_USE_LVGL_PORT
     #define PATH_PREFIX "A:"
 #else
-    #define PATH_PREFIX "./"
+    #define PATH_PREFIX "../../"
 #endif
+
+static void cb(void * param, int32_t x)
+{
+    lv_obj_set_pos(param, x, x);
+}
 
 /*
  * Load a vector font
@@ -46,6 +51,12 @@ void lv_example_freetype_2_vector_font(uint32_t font_size, uint32_t border_width
     lv_label_set_text(label, "Hello world\nI'm a font created with FreeType");
     lv_obj_center(label);
 
+    lv_anim_t a;
+    lv_anim_init(&a);
+    lv_anim_set_exec_cb(&a, cb);
+    lv_anim_set_var(&a, label);
+    lv_anim_set_repeat_count(&a, LV_ANIM_REPEAT_INFINITE);
+    lv_anim_start(&a);
 }
 
 /**
