@@ -669,7 +669,7 @@ static void refr_area(const lv_area_t * area_p, int32_t y_offset)
     if(disp_refr->render_mode == LV_DISPLAY_RENDER_MODE_FULL) {
         /*In full mode the area is always the full screen, so the buffer area to it too*/
         layer->buf_area = *area_p;
-        layer_reshape_draw_buf(layer, layer->draw_buf->header.stride);
+        layer_reshape_draw_buf(layer, disp_refr->stride_is_auto ? LV_STRIDE_AUTO : layer->draw_buf->header.stride);
 
     }
     else if(disp_refr->render_mode == LV_DISPLAY_RENDER_MODE_PARTIAL) {
