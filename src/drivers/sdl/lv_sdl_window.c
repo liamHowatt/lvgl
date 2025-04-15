@@ -33,10 +33,6 @@
 #define SDL_MAIN_HANDLED /*To fix SDL's "undefined reference to WinMain" issue*/
 #include "lv_sdl_private.h"
 
-#if LV_COLOR_DEPTH == 1 && LV_SDL_RENDER_MODE != LV_DISPLAY_RENDER_MODE_PARTIAL
-    #error SDL LV_COLOR_DEPTH 1 requires LV_SDL_RENDER_MODE LV_DISPLAY_RENDER_MODE_PARTIAL
-#endif
-
 /*********************
  *      DEFINES
  *********************/
@@ -94,6 +90,12 @@ static lv_timer_t * event_handler_timer;
 
 lv_display_t * lv_sdl_window_create(int32_t hor_res, int32_t ver_res)
 {
+    /* this cannot be a preprocessor expression because enumerator values cannot be evaluated by the preprocessor */
+    if(LV_COLOR_DEPTH == 1 && LV_SDL_RENDER_MODE != LV_DISPLAY_RENDER_MODE_PARTIAL && LV_SDL_RENDER_MODE != LV_DISPLAY_RENDER_MODE_FULL) {
+        LV_LOG_ERROR("SDL LV_COLOR_DEPTH 1 requires LV_SDL_RENDER_MODE LV_DISPLAY_RENDER_MODE_PARTIAL or LV_DISPLAY_RENDER_MODE_FULL");
+        return NULL;
+    }
+
     if(!inited) {
         SDL_Init(SDL_INIT_VIDEO);
         SDL_StartTextInput();
@@ -129,7 +131,16 @@ lv_display_t * lv_sdl_window_create(int32_t hor_res, int32_t ver_res)
 #endif
         lv_display_set_buffers(disp, dsc->buf1, dsc->buf2, buffer_size_bytes, LV_DISPLAY_RENDER_MODE_PARTIAL);
     }
-    /*LV_DISPLAY_RENDER_MODE_DIRECT or FULL */
+    else if(sdl_render_mode() == LV_DISPLAY_RENDER_MODE_FULL) {
+        uint32_t palette_size = LV_COLOR_INDEXED_PALETTE_SIZE(lv_display_get_color_format(disp)) * 4;
+        uint32_t buffer_size_bytes = hor_res * ver_res * lv_color_format_get_bpp(lv_display_get_color_format(disp)) / 8 + palette_size;
+        dsc->buf1 = sdl_draw_buf_realloc_aligned(NULL, buffer_size_bytes);
+#if LV_SDL_BUF_COUNT == 2
+        dsc->buf2 = sdl_draw_buf_realloc_aligned(NULL, buffer_size_bytes);
+#endif
+        lv_display_set_buffers(disp, dsc->buf1, dsc->buf2, buffer_size_bytes, LV_DISPLAY_RENDER_MODE_FULL);
+    }
+    /*LV_DISPLAY_RENDER_MODE_DIRECT */
     else {
         uint32_t stride = lv_draw_buf_width_to_stride(disp->hor_res,
                                                       lv_display_get_color_format(disp));
@@ -234,7 +245,7 @@ static void flush_cb(lv_display_t * disp, const lv_area_t * area, uint8_t * px_m
     lv_color_format_t cf = lv_display_get_color_format(disp);
     uint32_t * argb_px_map = NULL;
 
-    if(sdl_render_mode() == LV_DISPLAY_RENDER_MODE_PARTIAL) {
+    if(sdl_render_mode() == LV_DISPLAY_RENDER_MODE_PARTIAL || sdl_render_mode() == LV_DISPLAY_RENDER_MODE_FULL) {
         /*Update values in a special OLED I1 --> ARGB8888 case
           We render everything in I1, but display it in ARGB8888*/
         if(cf == LV_COLOR_FORMAT_I1) {
@@ -284,7 +295,7 @@ static void flush_cb(lv_display_t * disp, const lv_area_t * area, uint8_t * px_m
     }
 
     if(lv_display_flush_is_last(disp)) {
-        if(sdl_render_mode() != LV_DISPLAY_RENDER_MODE_PARTIAL) {
+        if(sdl_render_mode() != LV_DISPLAY_RENDER_MODE_PARTIAL && sdl_render_mode() != LV_DISPLAY_RENDER_MODE_FULL) {
             dsc->fb_act = px_map;
         }
 
@@ -426,7 +437,7 @@ static void texture_resize(lv_display_t * disp)
     dsc->fb1 = sdl_draw_buf_realloc_aligned(dsc->fb1, stride * disp->ver_res);
     lv_memzero(dsc->fb1, stride * disp->ver_res);
 
-    if(sdl_render_mode() == LV_DISPLAY_RENDER_MODE_PARTIAL) {
+    if(sdl_render_mode() == LV_DISPLAY_RENDER_MODE_PARTIAL || sdl_render_mode() == LV_DISPLAY_RENDER_MODE_FULL) {
         dsc->fb_act = dsc->fb1;
     }
     else {
