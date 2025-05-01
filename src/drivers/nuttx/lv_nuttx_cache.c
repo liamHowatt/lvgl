@@ -12,6 +12,7 @@
 
 #if LV_USE_NUTTX
 
+#include "../../core/lv_global.h"
 #include "../../draw/lv_draw_buf_private.h"
 #include <nuttx/cache.h>
 
