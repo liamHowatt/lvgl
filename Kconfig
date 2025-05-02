@@ -163,6 +163,10 @@ menu "LVGL configuration"
 	endmenu
 
 	menu "Rendering Configuration"
+		config LV_DRAW_DEFERRED_RENDER
+			bool "Draw Deferred Render"
+			default n
+
 		config LV_DRAW_BUF_STRIDE_ALIGN
 			int "Buffer stride alignment"
 			default 1
