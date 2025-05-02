@@ -398,6 +398,12 @@ static void draw_indic(lv_event_t * e)
     bool hor_need_reversed = hor && base_dir == LV_BASE_DIR_RTL;
     bool reversed = bar->val_reversed ^ hor_need_reversed;
 
+    /* An area with width 0 is {x1 = 0 x2 = -1} so subtracting 1 from `anim_cur_value_x` causes...
+     *     anim_start_value_x = 0   anim_cur_value_x = 0   to be {x1 = 0 x2 = -1  } which is width 0
+     *     anim_start_value_x = 0   anim_cur_value_x = 300 to be {x1 = 0 x2 =  299} which is width 300
+     */
+    anim_cur_value_x -= 1;
+
     if(reversed) {
         /*Swap axes*/
         int32_t * tmp;
@@ -414,7 +420,7 @@ static void draw_indic(lv_event_t * e)
         *axis1 += anim_start_value_x;
     }
     else {
-        *axis1 = *axis2 - anim_cur_value_x + 1;
+        *axis1 = *axis2 - anim_cur_value_x;
         *axis2 -= anim_start_value_x;
     }
 
@@ -458,9 +464,6 @@ static void draw_indic(lv_event_t * e)
         }
     }
 
-
-    if(reversed && !hor)
-        bar->indic_area.y2 -= 2;
     /*Do not draw a zero length indicator but at least call the draw task event*/
     if(!sym && indic_length_calc(&bar->indic_area) <= 1) {
         lv_obj_send_event(obj, LV_EVENT_DRAW_TASK_ADDED, NULL);
