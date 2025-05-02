@@ -22,8 +22,19 @@ extern "C" {
 #include <GLFW/glfw3.h>
 #elif LV_USE_OPENGLES_API == LV_OPENGLES_API_EGL
 #include <EGL/egl.h>
-#include <GLES/gl.h>
-#include <GLES3/gl3.h>
+// #include <GLES/gl.h>
+// #define GL_GLEXT_PROTOTYPES
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
+#define glGenVertexArrays glGenVertexArraysOES
+#define glDeleteVertexArrays glDeleteVertexArraysOES
+#define glBindVertexArray glBindVertexArrayOES
+#define GL_UNPACK_ROW_LENGTH GL_UNPACK_ROW_LENGTH_EXT
+static PFNGLGENVERTEXARRAYSOESPROC glGenVertexArraysOES;
+static PFNGLBINDVERTEXARRAYOESPROC glBindVertexArrayOES;
+static PFNGLDELETEVERTEXARRAYSOESPROC glDeleteVertexArraysOES;
+static PFNGLISVERTEXARRAYOESPROC glIsVertexArrayOES;
+// #include <GLES3/gl3.h>
 #endif
 
 /*********************
