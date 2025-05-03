@@ -102,9 +102,14 @@ void lv_nuttx_dsc_init(lv_nuttx_dsc_t * dsc)
     lv_memzero(dsc, sizeof(lv_nuttx_dsc_t));
     dsc->fb_path = "/dev/fb0";
     dsc->input_path = "/dev/input0";
+    dsc->keyboard_input_path = "/dev/kbd0";
 
 #ifdef CONFIG_UINPUT_TOUCH
     dsc->utouch_path = "/dev/utouch";
+#endif
+
+#ifdef CONFIG_UINPUT_KEYBOARD
+    dsc->utouch_path = "/dev/ukeyboard";
 #endif
 }
 
@@ -164,6 +169,22 @@ void lv_nuttx_init(const lv_nuttx_dsc_t * dsc, lv_nuttx_result_t * result)
             lv_indev_t * indev = lv_nuttx_touchscreen_create(dsc->utouch_path);
             if(result) {
                 result->utouch_indev = indev;
+            }
+        }
+#endif
+
+#if LV_USE_NUTTX_KEYBOARD
+        if(dsc->keyboard_input_path) {
+            lv_indev_t * indev = lv_nuttx_keyboard_create(dsc->keyboard_input_path);
+            if(result) {
+                result->keyboard_indev = indev;
+            }
+        }
+
+        if(dsc->ukeyboard_path) {
+            lv_indev_t * indev = lv_nuttx_keyboard_create(dsc->ukeyboard_path);
+            if(result) {
+                result->ukeyboard_indev = indev;
             }
         }
 #endif
@@ -230,6 +251,16 @@ void lv_nuttx_deinit(lv_nuttx_result_t * result)
         if(result->utouch_indev) {
             lv_indev_delete(result->utouch_indev);
             result->utouch_indev = NULL;
+        }
+
+        if(result->keyboard_indev) {
+            lv_indev_delete(result->keyboard_indev);
+            result->keyboard_indev = NULL;
+        }
+
+        if(result->ukeyboard_indev) {
+            lv_indev_delete(result->ukeyboard_indev);
+            result->ukeyboard_indev = NULL;
         }
     }
 #else

@@ -3852,7 +3852,7 @@
     #endif
 #endif
 
-/** Use Nuttx to open window and handle touchscreen */
+/** Use Nuttx to open window and handle touchscreen and keyboard */
 #ifndef LV_USE_NUTTX
     #ifdef CONFIG_LV_USE_NUTTX
         #define LV_USE_NUTTX CONFIG_LV_USE_NUTTX
@@ -3887,7 +3887,7 @@
         #endif
     #endif
 
-    /** Use Nuttx custom init API to open window and handle touchscreen */
+    /** Use Nuttx custom init API to open window and handle touchscreen and keyboard */
     #ifndef LV_USE_NUTTX_CUSTOM_INIT
         #ifdef CONFIG_LV_USE_NUTTX_CUSTOM_INIT
             #define LV_USE_NUTTX_CUSTOM_INIT CONFIG_LV_USE_NUTTX_CUSTOM_INIT
@@ -3921,7 +3921,7 @@
         #endif
     #endif
 
-    /** Driver for /dev/input */
+    /** Driver for /dev/input and /dev/utouch */
     #ifndef LV_USE_NUTTX_TOUCHSCREEN
         #ifdef CONFIG_LV_USE_NUTTX_TOUCHSCREEN
             #define LV_USE_NUTTX_TOUCHSCREEN CONFIG_LV_USE_NUTTX_TOUCHSCREEN
@@ -3936,6 +3936,15 @@
             #define LV_NUTTX_TOUCHSCREEN_CURSOR_SIZE CONFIG_LV_NUTTX_TOUCHSCREEN_CURSOR_SIZE
         #else
             #define LV_NUTTX_TOUCHSCREEN_CURSOR_SIZE    0
+        #endif
+    #endif
+
+    /** Driver for /dev/kbd and /dev/ukeyboard */
+    #ifndef LV_USE_NUTTX_KEYBOARD
+        #ifdef CONFIG_LV_USE_NUTTX_KEYBOARD
+            #define LV_USE_NUTTX_KEYBOARD CONFIG_LV_USE_NUTTX_KEYBOARD
+        #else
+            #define LV_USE_NUTTX_KEYBOARD       0
         #endif
     #endif
 #endif

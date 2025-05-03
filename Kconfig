@@ -1891,7 +1891,7 @@ menu "LVGL configuration"
 			default y
 
 		config LV_USE_NUTTX
-			bool "Use Nuttx to open window and handle touchscreen"
+			bool "Use Nuttx to open window and handle touchscreen and keyboard"
 			default n
 
 		config LV_USE_NUTTX_INDEPENDENT_IMAGE_HEAP
@@ -1910,7 +1910,7 @@ menu "LVGL configuration"
 			default n
 
 		config LV_USE_NUTTX_CUSTOM_INIT
-			bool "Use Custom Nuttx init API to open window and handle touchscreen"
+			bool "Use Custom Nuttx init API to open window and handle touchscreen and keyboard"
 			depends on LV_USE_NUTTX
 			default n
 
@@ -1958,6 +1958,11 @@ menu "LVGL configuration"
 			default 0
 			help
 				Set to 0 to disable cursor, or set to a value greater than 0 to set the cursor size in pixels.
+
+		config LV_USE_NUTTX_KEYBOARD
+			bool "Use NuttX keyboard driver"
+			depends on LV_USE_NUTTX
+			default n
 
 		config LV_USE_LINUX_DRM
 			bool "Use Linux DRM device"

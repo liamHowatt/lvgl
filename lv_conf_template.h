@@ -1189,7 +1189,7 @@
     #define LV_LINUX_FBDEV_MMAP          1
 #endif
 
-/** Use Nuttx to open window and handle touchscreen */
+/** Use Nuttx to open window and handle touchscreen and keyboard */
 #define LV_USE_NUTTX    0
 
 #if LV_USE_NUTTX
@@ -1200,7 +1200,7 @@
 
     #define LV_USE_NUTTX_LIBUV    0
 
-    /** Use Nuttx custom init API to open window and handle touchscreen */
+    /** Use Nuttx custom init API to open window and handle touchscreen and keyboard */
     #define LV_USE_NUTTX_CUSTOM_INIT    0
 
     /** Driver for /dev/lcd */
@@ -1210,11 +1210,14 @@
         #define LV_NUTTX_LCD_BUFFER_SIZE     60
     #endif
 
-    /** Driver for /dev/input */
+    /** Driver for /dev/input and /dev/utouch */
     #define LV_USE_NUTTX_TOUCHSCREEN    0
 
     /*Touchscreen cursor size in pixels(<=0: disable cursor)*/
     #define LV_NUTTX_TOUCHSCREEN_CURSOR_SIZE    0
+
+    /** Driver for /dev/kbd and /dev/ukeyboard */
+    #define LV_USE_NUTTX_KEYBOARD       0
 #endif
 
 /** Driver for /dev/dri/card */
