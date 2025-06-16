@@ -18,6 +18,7 @@
 #include "../draw/lv_draw.h"
 #include "../font/lv_font_fmt_txt.h"
 #include "../extra/others/snapshot/lv_snapshot.h"
+#include "stm32g0xx_hal.h"
 
 #if LV_USE_PERF_MONITOR || LV_USE_MEM_MONITOR
     #include "../widgets/lv_label.h"
@@ -636,6 +637,8 @@ static void refr_area_part(lv_draw_ctx_t * draw_ctx)
 #endif
     }
 
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, GPIO_PIN_SET);
+
     lv_obj_t * top_act_scr = NULL;
     lv_obj_t * top_prev_scr = NULL;
 
@@ -705,6 +708,8 @@ static void refr_area_part(lv_draw_ctx_t * draw_ctx)
     /*Also refresh top and sys layer unconditionally*/
     refr_obj_and_children(draw_ctx, lv_disp_get_layer_top(disp_refr));
     refr_obj_and_children(draw_ctx, lv_disp_get_layer_sys(disp_refr));
+
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, GPIO_PIN_RESET);
 
     draw_buf_flush(disp_refr);
 }
