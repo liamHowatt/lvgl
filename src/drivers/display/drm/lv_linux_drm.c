@@ -235,7 +235,8 @@ static void drm_dmabuf_set_active_buf(lv_event_t * event)
 }
 
 
-void lv_linux_drm_set_file(lv_display_t * disp, const char * file, int64_t connector_id)
+void lv_linux_drm_set_file(lv_display_t * disp, const char * file, int64_t connector_id,
+    lv_display_t ** out_display_texture, lv_opengles_window_t ** out_window, lv_opengles_window_texture_t ** out_window_texture)
 {
     // drm_dev_t * drm_dev = lv_display_get_driver_data(disp);
     drm_dev_t * drm_dev = drm_dev_temp;
@@ -277,6 +278,9 @@ void lv_linux_drm_set_file(lv_display_t * disp, const char * file, int64_t conne
     unsigned int texture_id = lv_opengles_texture_get_texture_id(texture);
     lv_opengles_window_texture_t * window_texture = lv_opengles_window_add_texture(window, texture_id, hor_res, ver_res);
 
+    *out_display_texture = texture;
+    *out_window = window;
+    *out_window_texture = window_texture;
 #endif
 
 #if !LV_LINUX_DRM_USE_EGL

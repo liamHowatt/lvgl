@@ -32,7 +32,8 @@ extern "C" {
  **********************/
 lv_display_t * lv_linux_drm_create(void);
 
-void lv_linux_drm_set_file(lv_display_t * disp, const char * file, int64_t connector_id);
+void lv_linux_drm_set_file(lv_display_t * disp, const char * file, int64_t connector_id,
+    lv_display_t ** out_display_texture, lv_opengles_window_t ** out_window, lv_opengles_window_texture_t ** out_window_texture);
 
 /* TEMP */
 #if LV_LINUX_DRM_USE_EGL

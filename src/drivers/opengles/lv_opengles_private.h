@@ -23,6 +23,11 @@ extern "C" {
 #elif LV_USE_OPENGLES_API == LV_OPENGLES_API_EGL
 #include <EGL/egl.h>
 #include <GLES3/gl3.h>
+#include <GL/gl.h>
+typedef double GLdouble;
+typedef double GLclampd;
+#define GL_GLEXT_PROTOTYPES
+#include <GL/glext.h>
 #endif
 
 /*********************
