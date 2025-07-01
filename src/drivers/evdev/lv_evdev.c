@@ -474,6 +474,8 @@ lv_result_t lv_evdev_discovery_start(lv_evdev_discovery_cb_t cb, void * user_dat
     ed->inotify_watch_active = _evdev_discovery_inotify_try_init_watcher(inotify_fd);
     if(evdev_discovery == NULL) return LV_RESULT_OK; /* was stopped by the callback. cleanup was already done */
 
+    _evdev_discovery_timer_cb(NULL);
+
     timer = lv_timer_create(_evdev_discovery_timer_cb, LV_DEF_REFR_PERIOD, NULL);
     if(timer == NULL) goto err_out;
     ed->timer = timer;
