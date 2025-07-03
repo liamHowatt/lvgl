@@ -359,6 +359,52 @@ void test_dropdown_render_1(void)
     lv_obj_set_style_bg_color(list, lv_color_hex3(0xf00), LV_PART_SELECTED | LV_STATE_CHECKED);
     lv_dropdown_set_selected(dd3, 3);
 
+    lv_obj_t * dd;
+
+    dd = lv_dropdown_create(lv_screen_active());
+    lv_obj_set_pos(dd, 10, 75);
+    lv_dropdown_set_selected(dd, 1);
+    lv_obj_set_style_text_align(dd, LV_TEXT_ALIGN_AUTO, LV_PART_MAIN);
+
+    dd = lv_dropdown_create(lv_screen_active());
+    lv_obj_set_pos(dd, 10, 125);
+    lv_dropdown_set_selected(dd, 1);
+    lv_obj_set_style_text_align(dd, LV_TEXT_ALIGN_LEFT, LV_PART_MAIN);
+
+    dd = lv_dropdown_create(lv_screen_active());
+    lv_obj_set_pos(dd, 10, 175);
+    lv_dropdown_set_selected(dd, 1);
+    lv_obj_set_style_text_align(dd, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN);
+
+    dd = lv_dropdown_create(lv_screen_active());
+    lv_obj_set_pos(dd, 10, 225);
+    lv_dropdown_set_selected(dd, 1);
+    lv_obj_set_style_text_align(dd, LV_TEXT_ALIGN_RIGHT, LV_PART_MAIN);
+
+    dd = lv_dropdown_create(lv_screen_active());
+    lv_obj_set_pos(dd, 10, 275);
+    lv_dropdown_set_selected(dd, 1);
+    lv_obj_set_style_text_align(dd, LV_TEXT_ALIGN_AUTO, LV_PART_MAIN);
+    lv_dropdown_set_dir(dd, LV_DIR_LEFT);
+
+    dd = lv_dropdown_create(lv_screen_active());
+    lv_obj_set_pos(dd, 10, 325);
+    lv_dropdown_set_selected(dd, 1);
+    lv_obj_set_style_text_align(dd, LV_TEXT_ALIGN_LEFT, LV_PART_MAIN);
+    lv_dropdown_set_dir(dd, LV_DIR_LEFT);
+
+    dd = lv_dropdown_create(lv_screen_active());
+    lv_obj_set_pos(dd, 10, 375);
+    lv_dropdown_set_selected(dd, 1);
+    lv_obj_set_style_text_align(dd, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN);
+    lv_dropdown_set_dir(dd, LV_DIR_LEFT);
+
+    dd = lv_dropdown_create(lv_screen_active());
+    lv_obj_set_pos(dd, 10, 425);
+    lv_dropdown_set_selected(dd, 1);
+    lv_obj_set_style_text_align(dd, LV_TEXT_ALIGN_RIGHT, LV_PART_MAIN);
+    lv_dropdown_set_dir(dd, LV_DIR_LEFT);
+
     TEST_ASSERT_EQUAL_SCREENSHOT("widgets/dropdown_1.png");
 }
 

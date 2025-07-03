@@ -952,18 +952,37 @@ static void draw_main(lv_event_t * e)
     txt_area.x2 = txt_area.x1 + size.x - 1;
     txt_area.y1 = obj->coords.y1;
     txt_area.y2 = txt_area.y1 + size.y - 1;
-    /*Center align the text if no symbol*/
-    if(dropdown->symbol == NULL) {
-        lv_area_align(&obj->coords, &txt_area, LV_ALIGN_CENTER, 0, 0);
+
+    lv_text_align_t align = lv_obj_get_style_text_align(obj, LV_PART_MAIN);
+    if(align != LV_TEXT_ALIGN_AUTO) {
+        align = lv_obj_calculate_style_text_align(obj, LV_PART_MAIN, opt_txt);
     }
-    else {
-        /*Text to the right*/
-        if(symbol_to_left) {
-            lv_area_align(&obj->coords, &txt_area, LV_ALIGN_RIGHT_MID, -right, 0);
-        }
-        else {
+
+    switch(align) {
+        case LV_TEXT_ALIGN_LEFT:
             lv_area_align(&obj->coords, &txt_area, LV_ALIGN_LEFT_MID, left, 0);
-        }
+            break;
+        case LV_TEXT_ALIGN_RIGHT:
+            lv_area_align(&obj->coords, &txt_area, LV_ALIGN_RIGHT_MID, -right, 0);
+            break;
+        case LV_TEXT_ALIGN_CENTER:
+            lv_area_align(&obj->coords, &txt_area, LV_ALIGN_CENTER, 0, 0);
+            break;
+        default:
+            /*Center align the text if no symbol*/
+            if(dropdown->symbol == NULL) {
+                lv_area_align(&obj->coords, &txt_area, LV_ALIGN_CENTER, 0, 0);
+            }
+            else {
+                /*Text to the right*/
+                if(symbol_to_left) {
+                    lv_area_align(&obj->coords, &txt_area, LV_ALIGN_RIGHT_MID, -right, 0);
+                }
+                else {
+                    lv_area_align(&obj->coords, &txt_area, LV_ALIGN_LEFT_MID, left, 0);
+                }
+            }
+            break;
     }
 
     label_dsc.text = opt_txt;
