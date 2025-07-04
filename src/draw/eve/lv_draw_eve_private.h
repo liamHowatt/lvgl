@@ -23,6 +23,7 @@ extern "C" {
 #if LV_USE_DRAW_EVE
 
 #include "lv_draw_eve_target.h"
+#include "lv_draw_eve_ram_g.h"
 #include "../lv_draw_private.h"
 #include "../../misc/lv_types.h"
 #include "../lv_draw_triangle.h"
@@ -37,18 +38,6 @@ extern "C" {
 /**********************
  *      TYPEDEFS
  **********************/
-
-typedef struct {
-    uintptr_t key;
-    uint32_t addr;
-} lv_draw_eve_ramg_hash_table_cell_t;
-
-typedef struct {
-    uint32_t ramg_addr_end;
-    uint32_t hash_table_cell_count;
-    uint32_t hash_table_cells_occupied;
-    lv_draw_eve_ramg_hash_table_cell_t * hash_table;
-} lv_draw_eve_ramg_t;
 
 typedef struct {
     lv_draw_unit_t base_unit;

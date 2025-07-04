@@ -23,6 +23,8 @@
 
 #define RAMG_DEBUG 0
 
+#define RESERVED_RANGE_END LV_DRAW_EVE_RAMG_DL_CLONE_SIZE
+
 /**********************
  *      TYPEDEFS
  **********************/
@@ -90,7 +92,7 @@ bool lv_draw_eve_ramg_get_addr(uint32_t * addr_dst, uintptr_t key,
     uint32_t addr_ret = LV_ALIGN_UP(ramg->ramg_addr_end, addr_align);
     uint32_t addr_new_end = addr_ret + addr_size;
 
-    if(addr_new_end > 1024 * 1024) {
+    if(addr_new_end > ramg->ramg_stack_pointer) {
         LV_LOG_WARN("EVE on-chip 1 MB RAM_G for images and fonts has run out.");
         *addr_dst = LV_DRAW_EVE_RAMG_OUT_OF_RAMG;
         return false;
@@ -114,15 +116,40 @@ bool lv_draw_eve_ramg_get_addr(uint32_t * addr_dst, uintptr_t key,
     return false;
 }
 
+uint32_t lv_draw_eve_ramg_temp_stack_alloc(uint32_t addr_size, uint32_t addr_align)
+{
+    lv_draw_eve_ramg_t * ramg = &lv_draw_eve_unit_g->ramg;
+
+    uint32_t addr_ret = ramg->ramg_stack_pointer - addr_size;
+    addr_ret = LV_ALIGN_DOWN(addr_ret, addr_align);
+
+    if(addr_ret < ramg->ramg_addr_end) {
+        LV_LOG_WARN("EVE on-chip 1 MB RAM_G for images and fonts has run out while allocating temporary rendering memory.");
+        return LV_DRAW_EVE_RAMG_OUT_OF_RAMG;
+    }
+
+    ramg->ramg_stack_pointer = addr_ret;
+    return addr_ret;
+}
+
+void lv_draw_eve_ramg_temp_stack_clear(void)
+{
+    lv_draw_eve_ramg_t * ramg = &lv_draw_eve_unit_g->ramg;
+
+    ramg->ramg_stack_pointer = 1024 * 1024;
+}
+
 /**********************
  *   STATIC FUNCTIONS
  **********************/
 
 static void ramg_init(lv_draw_eve_ramg_t * ramg)
 {
+    ramg->ramg_addr_end = RESERVED_RANGE_END;
     ramg->hash_table_cell_count = 32;
     ramg->hash_table = lv_calloc(32, sizeof(lv_draw_eve_ramg_hash_table_cell_t));
     LV_ASSERT_MALLOC(ramg->hash_table);
+    ramg->ramg_stack_pointer = 1024 * 1024;
 }
 
 static uint32_t hash_key(uintptr_t key)

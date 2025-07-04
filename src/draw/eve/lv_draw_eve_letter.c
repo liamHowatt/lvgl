@@ -20,10 +20,13 @@
 #include "lv_eve.h"
 #include "lv_draw_eve_ram_g.h"
 #include "../../font/lv_font_fmt_txt.h"
+#include "../../misc/lv_area_private.h"
 
 /*********************
  *      DEFINES
  *********************/
+
+#define SNAPSHOT_FMT EVE_RGB565
 
 /**********************
  *      TYPEDEFS
@@ -42,6 +45,8 @@ static void font_bitmap_to_ramg(uint32_t addr, const uint8_t * src, uint32_t wid
  *  STATIC VARIABLES
  **********************/
 
+static lv_area_t label_extents;
+
 /**********************
  *      MACROS
  **********************/
@@ -56,12 +61,83 @@ static void font_bitmap_to_ramg(uint32_t addr, const uint8_t * src, uint32_t wid
 void lv_draw_eve_label(lv_draw_task_t * t, const lv_draw_label_dsc_t * dsc, const lv_area_t * coords)
 {
     if(dsc->opa <= LV_OPA_MIN) return;
+    
+    EVE_end_cmd_burst();
+    EVE_execute_cmd();
+    /* get the display list offset */
+    uint16_t dl_save = EVE_memRead16(REG_CMD_DL);
+    EVE_start_cmd_burst();
+
+    lv_eve_save_context();
 
     lv_eve_scissor(t->clip_area.x1, t->clip_area.y1, t->clip_area.x2, t->clip_area.y2);
-    lv_eve_save_context();
+
     lv_eve_primitive(LV_EVE_PRIMITIVE_BITMAPS);
+
+    label_extents.x1 = INT32_MAX;
+    label_extents.y1 = INT32_MAX;
+    label_extents.x2 = INT32_MIN;
+    label_extents.y2 = INT32_MIN;
+
     lv_draw_label_iterate_characters(t, dsc, coords, lv_draw_eve_letter_cb);
+
+    lv_area_t snapshot_area;
+    if(!lv_area_intersect(&snapshot_area, &label_extents, &t->clip_area)) {
+        lv_area_set(&snapshot_area, 0, 0, -1, -1);
+    }
+
     lv_eve_restore_context();
+
+    EVE_cmd_dl_burst(DL_DISPLAY); /* instruct the co-processor to show the list */
+    EVE_cmd_dl_burst(CMD_SWAP);   /* make this list active */
+
+    EVE_end_cmd_burst();
+    EVE_execute_cmd();
+
+
+    EVE_cmd_memcpy(LV_DRAW_EVE_RAMG_DL_CLONE_ADDR, EVE_RAM_DL, dl_save);
+
+
+    uint32_t snapshot_ramg_location = lv_draw_eve_ramg_temp_stack_alloc(lv_area_get_size(&snapshot_area) * 2, 2);
+    int32_t snapshot_w = lv_area_get_width(&snapshot_area);
+    int32_t snapshot_h = lv_area_get_height(&snapshot_area);
+
+    // LV_LOG_USER("%u %d %d", (unsigned) snapshot_ramg_location, (int) snapshot_w, (int) snapshot_h);
+
+    // EVE_memWrite8(REG_PCLK, 0);
+    EVE_cmd_snapshot2(
+        SNAPSHOT_FMT,
+        snapshot_ramg_location,
+        snapshot_area.x1,
+        snapshot_area.y1,
+        snapshot_w,
+        snapshot_h
+    );
+    /* EVE_cmd_snapshot2 waits for the coprocessor to finish */
+    // EVE_memWrite8(REG_PCLK, EVE_PCLK);
+
+    EVE_start_cmd_burst();
+    EVE_cmd_dl_burst(CMD_DLSTART);
+    EVE_cmd_append(LV_DRAW_EVE_RAMG_DL_CLONE_ADDR, dl_save);
+
+    lv_eve_save_context();
+
+    lv_eve_scissor(t->clip_area.x1, t->clip_area.y1, t->clip_area.x2, t->clip_area.y2);
+
+    lv_eve_primitive(LV_EVE_PRIMITIVE_BITMAPS);
+    EVE_cmd_dl_burst(BITMAP_SOURCE(snapshot_ramg_location));
+    // EVE_cmd_dl_burst(BITMAP_SIZE_H(snapshot_w, snapshot_h));
+    EVE_cmd_dl_burst(BITMAP_SIZE(EVE_NEAREST, EVE_BORDER, EVE_BORDER, snapshot_w, snapshot_h));
+    // EVE_cmd_dl_burst(BITMAP_LAYOUT_H(snapshot_w * 2, snapshot_h));
+    EVE_cmd_dl_burst(BITMAP_LAYOUT(SNAPSHOT_FMT, snapshot_w * 2, snapshot_h));
+    lv_eve_vertex_2f(snapshot_area.x1, snapshot_area.y1);
+
+    lv_eve_restore_context();
+
+    LV_LOG_WARN("%"LV_PRId32" %"LV_PRId32" %"LV_PRId32" %"LV_PRId32"      %"LV_PRId32" %"LV_PRId32"  %s",
+        snapshot_area.x1, snapshot_area.y1, snapshot_area.x2, snapshot_area.y2,
+        snapshot_w, snapshot_h,
+        dsc->text);
 }
 
 /**********************
@@ -75,6 +151,11 @@ static void lv_draw_eve_letter_cb(lv_draw_task_t * t, lv_draw_glyph_dsc_t * glyp
     if(fill_draw_dsc && fill_area) {
         /* draw UNDERLINE and STRIKETHROUGH */
         lv_eve_draw_rect_simple(fill_area->x1, fill_area->y1, fill_area->x2, fill_area->y2, 0);
+
+        label_extents.x1 = LV_MIN(label_extents.x1, fill_area->x1);
+        label_extents.y1 = LV_MIN(label_extents.y1, fill_area->y1);
+        label_extents.x2 = LV_MAX(label_extents.x2, fill_area->x2);
+        label_extents.y2 = LV_MAX(label_extents.y2, fill_area->y2);
     }
 
     if(glyph_draw_dsc == NULL)
@@ -129,6 +210,11 @@ static void lv_draw_eve_letter_cb(lv_draw_task_t * t, lv_draw_glyph_dsc_t * glyp
     EVE_cmd_dl_burst(BITMAP_LAYOUT(bpp_eve, g_aligned_stride, g_box_h));
 
     lv_eve_vertex_2f(glyph_draw_dsc->letter_coords->x1, glyph_draw_dsc->letter_coords->y1);
+
+    label_extents.x1 = LV_MIN(label_extents.x1, glyph_draw_dsc->letter_coords->x1);
+    label_extents.y1 = LV_MIN(label_extents.y1, glyph_draw_dsc->letter_coords->y1);
+    label_extents.x2 = LV_MAX(label_extents.x2, glyph_draw_dsc->letter_coords->x2);
+    label_extents.y2 = LV_MAX(label_extents.y2, glyph_draw_dsc->letter_coords->y2);
 }
 
 static void font_bitmap_to_ramg(uint32_t addr, const uint8_t * src, uint32_t width,

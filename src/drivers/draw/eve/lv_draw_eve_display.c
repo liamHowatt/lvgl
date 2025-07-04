@@ -12,6 +12,7 @@
 
 #include "../../../draw/eve/lv_eve.h"
 #include "../../../draw/eve/lv_draw_eve.h"
+#include "../../../draw/eve/lv_draw_eve_ram_g.h"
 #include "../../../display/lv_display_private.h"
 #include "../../../draw/lv_draw_buf.h"
 
@@ -148,6 +149,8 @@ static void flush_cb(lv_display_t * disp, const lv_area_t * area, uint8_t * px_m
         EVE_cmd_dl_burst(DL_CLEAR | CLR_COL | CLR_STN | CLR_TAG);
         EVE_cmd_dl_burst(VERTEX_FORMAT(0));
         EVE_end_cmd_burst();
+
+        lv_draw_eve_ramg_temp_stack_clear();
     }
 
     lv_display_flush_ready(disp);
