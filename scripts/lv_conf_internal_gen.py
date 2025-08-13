@@ -73,6 +73,7 @@ fout.write(
 
 #define LV_OPENGLES_API_GLFW        0
 #define LV_OPENGLES_API_EGL         1
+#define LV_OPENGLES_API_RAW         2
 
 /** Handle special Kconfig options. */
 #ifndef LV_KCONFIG_IGNORE

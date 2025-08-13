@@ -35,6 +35,7 @@
 
 #define LV_OPENGLES_API_GLFW        0
 #define LV_OPENGLES_API_EGL         1
+#define LV_OPENGLES_API_RAW         2
 
 /** Handle special Kconfig options. */
 #ifndef LV_KCONFIG_IGNORE
@@ -4344,7 +4345,8 @@
 
     /** Select which OpenGL API to use. Possible options:
      * - LV_OPENGLES_API_GLFW
-     * - LV_OPENGLES_API_EGL */
+     * - LV_OPENGLES_API_EGL
+     * - LV_OPENGLES_API_RAW */
     #ifndef LV_USE_OPENGLES_API
         #ifdef CONFIG_LV_USE_OPENGLES_API
             #define LV_USE_OPENGLES_API CONFIG_LV_USE_OPENGLES_API

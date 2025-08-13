@@ -1344,7 +1344,8 @@
 
     /** Select which OpenGL API to use. Possible options:
      * - LV_OPENGLES_API_GLFW
-     * - LV_OPENGLES_API_EGL */
+     * - LV_OPENGLES_API_EGL
+     * - LV_OPENGLES_API_RAW */
     #define LV_USE_OPENGLES_API LV_OPENGLES_API_GLFW
 #endif
 

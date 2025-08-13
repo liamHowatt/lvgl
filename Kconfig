@@ -2050,6 +2050,16 @@ menu "LVGL configuration"
 			bool "Use Linux DRM device"
 			default n
 
+		if LV_USE_LINUX_DRM
+			config LV_USE_LINUX_DRM_GBM_BUFFERS
+				bool "Use GBM buffers"
+				default n
+
+			config LV_LINUX_DRM_USE_EGL
+				bool "Use OpenGLES EGL"
+				default n
+		endif
+
 		config LV_USE_TFT_ESPI
 			bool "Use TFT_eSPI driver"
 			default n
@@ -2140,6 +2150,18 @@ menu "LVGL configuration"
 			bool "Enable debug mode for OpenGL"
 			depends on LV_USE_OPENGLES
 			default n
+
+		choice LV_USE_OPENGLES_API
+			prompt "OpenGL API to use"
+			default LV_OPENGLES_API_GLFW
+
+			config LV_OPENGLES_API_GLFW
+				bool "0: GLFW"
+			config LV_OPENGLES_API_EGL
+				bool "1: EGL"
+			config LV_OPENGLES_API_RAW
+				bool "2: raw"
+		endchoice
 
 		config LV_USE_QNX
 			bool "Use a QNX Screen window as a display"
