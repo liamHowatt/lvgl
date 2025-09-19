@@ -52,6 +52,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "driver/gpio.h"
 #include "freertos/task.h"
 
+#define EVE_CS   GPIO_NUM_5
+#define EVE_PDN  GPIO_NUM_4
+#define EVE_SCK  GPIO_NUM_12
+#define EVE_MISO GPIO_NUM_13
+#define EVE_MOSI GPIO_NUM_11
+
 /* you may define these in your build-environment to use different settings */
 #if !defined (EVE_CS)
 #define EVE_CS GPIO_NUM_13
