@@ -49,6 +49,8 @@ def main():
         print(LOG, 'LVGL release branches after "oldest-major" filter:',
               ", ".join(fmt_release(br) for br in lvgl_release_branches) or "(none)")
 
+    lvgl_latest_release = lvgl_release_branches[-1] if lvgl_release_branches else None
+
     with open(port_urls_path) as f:
         urls = f.read()
     urls = [url for url in map(str.strip, urls.splitlines()) if url]
@@ -123,6 +125,13 @@ def main():
                     # version. One must be created manually.
                     print(LOG, "... this port has no major from which to create the minor. one must be created manually. continuing to next.")
                     continue
+
+                # if this is the latest LVGL release, base it off of the port's master instead
+                # of the port most recent minor release.
+                if port_branch == lvgl_latest_release and port_default_branch is not None:
+                    print(LOG, f"... this new {port_branch} branch will be based off the port's '{port_default_branch}'"
+                                    f" instead of the port's {create_from} because {port_branch} is the latest LVGL release.")
+                    create_from = port_default_branch
 
                 print(LOG, f"... creating the new branch {fmt_release(port_branch)} "
                                              f"from {fmt_release(create_from)}")
