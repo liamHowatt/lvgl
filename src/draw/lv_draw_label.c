@@ -566,7 +566,7 @@ void lv_draw_unit_draw_letter(lv_draw_task_t * t, lv_draw_glyph_dsc_t * dsc,  co
     bool g_ret = lv_font_get_glyph_dsc(font, &g, letter, '\0');
     if(g_ret == false) {
         /*Add warning if the dsc is not found*/
-        LV_LOG_WARN("lv_draw_letter: glyph dsc. not found for U+%" LV_PRIX32, letter);
+        LV_LOG_INFO("lv_draw_letter: glyph dsc. not found for U+%" LV_PRIX32, letter);
     }
 
     /*Don't draw anything if the character is empty. E.g. space*/
