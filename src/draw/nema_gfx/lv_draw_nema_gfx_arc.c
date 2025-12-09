@@ -98,6 +98,7 @@ void lv_draw_nema_gfx_arc(lv_draw_task_t * t, const lv_draw_arc_dsc_t * dsc, con
     }
 
     nema_cl_submit(&(draw_nema_gfx_unit->cl));
+    nema_cl_wait(&(draw_nema_gfx_unit->cl));
 
 }
 

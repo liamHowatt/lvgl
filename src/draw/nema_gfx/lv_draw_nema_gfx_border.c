@@ -221,6 +221,7 @@ void lv_draw_nema_gfx_border(lv_draw_task_t * t, const lv_draw_border_dsc_t * ds
     }
 
     nema_cl_submit(&(draw_nema_gfx_unit->cl));
+    nema_cl_wait(&(draw_nema_gfx_unit->cl));
 
 }
 #endif

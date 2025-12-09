@@ -91,6 +91,7 @@ void lv_draw_nema_gfx_line(lv_draw_task_t * t, const lv_draw_line_dsc_t * dsc)
     nema_draw_line_aa(point1.x, point1.y, point2.x, point2.y, dsc->width, bg_color);
 
     nema_cl_submit(&(draw_nema_gfx_unit->cl));
+    nema_cl_wait(&(draw_nema_gfx_unit->cl));
 
 }
 #endif

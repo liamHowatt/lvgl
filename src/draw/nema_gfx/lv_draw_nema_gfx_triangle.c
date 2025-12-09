@@ -168,6 +168,7 @@ void lv_draw_nema_gfx_triangle(lv_draw_task_t * t, const lv_draw_triangle_dsc_t 
 #endif
 
     nema_cl_submit(&(draw_nema_gfx_unit->cl));
+    nema_cl_wait(&(draw_nema_gfx_unit->cl));
 
 }
 #endif
